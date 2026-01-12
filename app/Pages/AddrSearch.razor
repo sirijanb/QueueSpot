@@ -176,6 +176,8 @@
                 prediction.PlaceId
             );
 
+            searchText = placeDetails.FormattedAddress;
+
             await OnAddressSelected.InvokeAsync(placeDetails);
         }
         catch (Exception ex)
