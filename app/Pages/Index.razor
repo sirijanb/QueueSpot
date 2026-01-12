@@ -1,7 +1,93 @@
 ﻿@page "/"
+@using app.Models
+@inject NavigationManager Nav
+@inject IJSRuntime JS
 
-<PageTitle>Index</PageTitle>
+<div class="container vh-100 d-flex align-items-center justify-content-center">
+    <div class="text-center w-75">
 
-<h1>Hello, world!</h1>
+        <div class="mb-3">
+            <i class="bi bi-hospital fs-1 text-primary"></i>
+        </div>
 
-Welcome to your new app.
+        <h1 class="fw-bold">Find Care Near You</h1>
+        <p class="text-muted">
+            Locate nearest hospitals, check wait times, and get directions instantly.
+        </p>
+
+        <div class="input-group input-group-lg mt-4 shadow-sm">
+            <!-- <span class="input-group-text bg-white">
+                <i class="bi bi-search"></i>
+            </span> -->
+            
+            <AddrSearch @bind-AddrValue="@addrValue" OnClick="Search" />
+        </div>
+
+        <div class="mt-3">
+            <button class="btn btn-outline-secondary btn-sm" @onclick="UseLocation">
+                @currentLocationString
+            </button>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    string addrValue = "";
+    string currentLocationString = "Use Current Location";
+
+    string locationPermissionStatus = "prompt";
+
+    async Task UseLocation()
+    {
+        currentLocationString = "Locating...";
+        try
+        {
+
+            locationPermissionStatus = await JS.InvokeAsync<string>("locationPermission.checkPermission");
+
+            if (locationPermissionStatus == "denied")
+            {
+                currentLocationString = "Failed to locate";
+                Console.WriteLine("Error: Location access is blocked.");
+                //errorMessage = "Location access is blocked. Please enable it in your browser settings.";
+            } else {
+
+                var usersLoc = await JS.InvokeAsync<UserLocation>(
+                    "placesAutocomplete.getUserLocation"
+                );
+
+                var placeDetails = await JS.InvokeAsync<PlaceDetails>(
+                    "placesAutocomplete.getLocAddr",
+                    usersLoc.Latitude, usersLoc.Longitude
+                );
+
+                addrValue = placeDetails.FormattedAddress;
+                currentLocationString = "Use Current Location";
+                Search();
+            }
+        }
+        catch (Exception ex)
+        {
+            currentLocationString = "Failed to locate";
+            //errorMessage = "Error fetching address details";
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+        }
+    }
+
+
+    void Search()
+    {
+        if (!string.IsNullOrWhiteSpace(addrValue))
+        {
+            Nav.NavigateTo($"/finder?query={Uri.EscapeDataString(addrValue)}");
+        } else
+        {
+        }
+    }
+
+
+}
