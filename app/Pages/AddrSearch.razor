@@ -1,0 +1,209 @@
+﻿@using app.Models
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+
+<input class="form-control"
+       id="addressInput"
+       value="@searchText"
+       @oninput="OnInputChanged"
+       @onfocus="OnFocus"
+       placeholder="@Placeholder"
+       autocomplete="off" />
+
+@if (isLoading)
+{
+    <div class="autocomplete-loading">
+        <span class="spinner-border spinner-border-sm"></span>
+    </div>
+}
+
+@if (showSuggestions && predictions != null && predictions.Count > 0)
+{
+    <ul class="autocomplete-dropdown">
+        @foreach (var prediction in predictions)
+        {
+            <li @onclick="@(() => SelectPrediction(prediction))">
+                <div class="suggestion-item">
+                    <strong>@prediction.MainText</strong>
+                    <br />
+                    <small class="text-muted">@prediction.SecondaryText</small>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@if (showSuggestions && predictions != null && predictions.Count == 0 && !isLoading && searchText.Length >= MinCharacters)
+{
+    <ul class="autocomplete-dropdown">
+        <li class="no-results">No addresses found</li>
+    </ul>
+}
+
+
+
+<button class="btn btn-primary" @onclick="OnClick" @ondblclick="OnDbClick">
+    Search
+</button>
+
+
+
+@code {
+    [Parameter]
+    public string Label { get; set; } = "Address";
+
+    [Parameter]
+    public string Placeholder { get; set; } = "Your address or postal code";
+
+    [Parameter]
+    public string CountryCode { get; set; } = "ca"; // ISO 3166-1 Alpha-2 country code
+
+    [Parameter]
+    public EventCallback<PlaceDetails> OnAddressSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnDbClick { get; set; }
+
+    [Parameter]
+    public int MinCharacters { get; set; } = 3;
+
+    [Parameter]
+    public int DebounceMs { get; set; } = 300;
+
+    [Parameter]
+    public string AddrValue
+    {
+        get => searchText;
+        set
+        {
+            searchText = value;
+        }
+
+    }
+
+
+    [Parameter]
+    public EventCallback<string> AddrValueChanged { get; set; }
+
+    private string searchText = string.Empty;
+    private List<PlacePrediction> predictions = new List<PlacePrediction>();
+    private bool showSuggestions = false;
+    private bool isLoading = false;
+    private string errorMessage = string.Empty;
+    private CancellationTokenSource? cancellationTokenSource;
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value?.ToString() ?? string.Empty;
+        errorMessage = string.Empty;
+
+        cancellationTokenSource?.Cancel();
+
+        if (string.IsNullOrWhiteSpace(searchText) || searchText.Length < MinCharacters)
+        {
+            predictions.Clear();
+            showSuggestions = false;
+            isLoading = false;
+            StateHasChanged();
+            return;
+        }
+
+        isLoading = true;
+        showSuggestions = true;
+        StateHasChanged();
+
+        cancellationTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(DebounceMs, cancellationTokenSource.Token);
+            await GetPredictions(searchText, cancellationTokenSource.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancellation
+        }
+
+        if (AddrValueChanged.HasDelegate) // Send value update to the parent page
+        {
+            await AddrValueChanged.InvokeAsync(searchText);
+        }
+    }
+
+    private async Task GetPredictions(string input, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await JS.InvokeAsync<List<PlacePrediction>>(
+                "placesAutocomplete.getPlacePredictions",
+                cancellationToken,
+                input,
+                CountryCode
+            );
+
+            predictions = result ?? new List<PlacePrediction>();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error fetching address suggestions";
+            Console.WriteLine($"Error: {ex.Message}");
+            predictions.Clear();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SelectPrediction(PlacePrediction prediction)
+    {
+        searchText = prediction.Description;
+        showSuggestions = false;
+        predictions.Clear();
+        isLoading = true;
+        errorMessage = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            var placeDetails = await JS.InvokeAsync<PlaceDetails>(
+                "placesAutocomplete.getPlaceDetails",
+                prediction.PlaceId
+            );
+
+            await OnAddressSelected.InvokeAsync(placeDetails);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Error fetching address details";
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnFocus()
+    {
+        if (predictions.Count > 0)
+        {
+            showSuggestions = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource?.Cancel();
+        cancellationTokenSource?.Dispose();
+    }
+
+
+
+}
