@@ -1,0 +1,238 @@
+﻿@page "/finder"
+@using app.Models
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+
+<div class="container-fluid">
+    <div class="row vh-100 overflow-hidden">
+
+        <!-- LEFT PANEL -->
+        <div class="col-4 border-end p-3 vh-100 overflow-scroll">
+
+            <h5 class="fw-bold mb-3">Hospitals Near You</h5>
+
+            <div class="input-group input-group-lg mt-4 shadow-sm">
+         
+                <AddrSearch @bind-AddrValue="@DisplayQuery" OnAddressSelected="SearchPlaces" OnClick="SearchPlaces" />
+            </div>
+
+            <small class="text-muted">
+                Showing results for:
+                <b>@DisplayQuery</b>
+            </small>
+
+            <hr />
+
+            <div class="" >
+            @foreach (var hospital in Hospitals)
+            {
+                <HospitalCard Hospital="hospital"
+                              OnSelect="SelectHospital" />
+            }
+            </div>
+
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="col-8 p-0">
+
+
+            <div id="map" class="h-100 d-flex align-items-center justify-content-center bg-light">
+                </div>
+            @if (SelectedHospital is not null)
+            {
+                
+            
+                <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
+            }
+
+        </div>
+
+    </div>
+</div>
+
+@code {
+    string DisplayQuery = "your location";
+
+    Hospital? SelectedHospital;
+
+    private int radiusKm = 5;
+    private bool isSearching = false;
+    private string errorMessage = string.Empty;
+    private List<PlaceResult>? places;
+    private double currentLat = 43.651070; // Default to Toronto
+    private double currentLng = -79.347015;
+    private bool mapInitialized = false;
+
+    List<Hospital> Hospitals = new List<Hospital>();
+
+    protected override void OnInitialized()
+    {
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities
+            .QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("query", out var value))
+        {
+            DisplayQuery = value!;
+        }
+
+    }
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+
+        if (firstRender)
+        {
+            try
+            {
+                // Wait for Google Maps to load
+                await Task.Delay(500);
+
+
+
+                await JS.InvokeVoidAsync("placesSearch.initializeMap", "map", currentLat, currentLng, 12);
+                mapInitialized = true;
+
+                Console.WriteLine(DisplayQuery);
+
+                if (!string.IsNullOrEmpty(DisplayQuery))
+                {
+
+
+                    // Search at the beginning
+                    await SearchPlaces();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                errorMessage = $"Error initializing map: {ex.Message}";
+                StateHasChanged();
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    void SelectHospital(Hospital hospital)
+    {
+        SelectedHospital = hospital;
+    }
+
+    private async Task SearchPlaces()
+    {
+
+        if(isSearching)
+        {
+
+            return;
+        }
+
+        isSearching = true;
+        errorMessage = string.Empty;
+        StateHasChanged();
+
+        var radius = radiusKm * 1000; // Convert to metres
+
+        var includedTypes = new[] { "hospital" };
+
+
+        try
+        {
+
+            var place = await JS.InvokeAsync<PlaceDetails>(
+                "placesAutocomplete.getAddrDetails",
+                DisplayQuery
+            );
+
+            currentLat = place.Latitude;
+            currentLng = place.Longitude;
+            Console.WriteLine(currentLat);
+            Console.WriteLine(currentLng);
+            await JS.InvokeVoidAsync("placesSearch.setCentre", currentLat, currentLng, 13);
+
+
+            places = await JS.InvokeAsync<List<PlaceResult>>(
+                "placesSearch.searchNearbyPlacesNew",
+                currentLat,
+                currentLng,
+                radius,
+                includedTypes
+            );
+
+
+            associateHospitalInfo();
+
+            await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
+
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error searching places: {ex.Message}";
+            DisplayQuery = errorMessage;
+            places = null;
+        }
+        finally
+        {
+            isSearching = false;
+            StateHasChanged();
+        }
+
+    }
+
+    private async Task CloseHospitalDetails()
+    {
+        SelectedHospital = null;
+        //await JS.InvokeVoidAsync("placesSearch.reDrawMap", null, true);
+        //await JS.InvokeVoidAsync("placesSearch.setCentre", currentLat, currentLng, 13);
+
+    }
+
+    private void associateHospitalInfo()
+    {
+        int i = 1; // Temp number
+        Hospitals = new List<Hospital>();
+
+        if(places != null && places.Count > 0)
+        {
+            foreach(var place in places)
+            {
+                Hospitals.Add(new Hospital
+                {
+                    Id = i++,
+                    Name = place.Name,
+                    PlaceID = place.PlaceId,
+                    Distance = String.Format("{0:0.00} km",distance(place.Latitude, place.Longitude)),
+                    EstimatedWait = String.Format("{0} hours", new Random().Next(100)),
+                    BedsOpen = "0 Avail",
+                    Status = "Unavailable",
+                    Latitude = place.Latitude, Longitude = place.Longitude,
+                    Photo = (place.Photos.Count > 0 ? place.Photos[0] : ""),
+                    Services = new() { "Cardiology", "Neurology" }
+                });
+            }
+        } 
+    }
+
+    private double distance(double targetLat, double targetLng)
+    {
+        double R = 6371; // Earth's radius in kilometres
+        double dLat = (targetLat - currentLat) * Math.PI / 180;
+        double dLon = (targetLng - currentLng) * Math.PI / 180;
+
+        double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                  Math.Cos(currentLat * Math.PI / 180) * Math.Cos(targetLat * Math.PI / 180) *
+                  Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+        double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        double distance = R * c;
+
+        return distance; // in kilometres
+
+    }
+}

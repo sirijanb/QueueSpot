@@ -46,9 +46,52 @@
                 this.initialize();
             }
 
-            var latlng = new google.maps.LatLng(lat, lng);
+            const latlng = new google.maps.LatLng(lat, lng);
 
             this.geocoder.geocode({ location: latlng }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    const place = results[0];
+
+                    // Extract address components
+                    const addressComponents = {};
+                    place.address_components.forEach(component => {
+                        const type = component.types[0];
+                        addressComponents[type] = component.long_name;
+                    });
+
+                    const details = {
+                        placeId: place.place_id,
+                        formattedAddress: place.formatted_address,
+                        streetNumber: addressComponents.street_number || '',
+                        route: addressComponents.route || '',
+                        city: addressComponents.locality || addressComponents.sublocality || '',
+                        province: addressComponents.administrative_area_level_1 || '',
+                        country: addressComponents.country || '',
+                        postalCode: addressComponents.postal_code || '',
+                        latitude: place.geometry.location.lat(),
+                        longitude: place.geometry.location.lng()
+                    };
+
+                    resolve(details);
+
+                    // Reset session token after getting details
+                    this.sessionToken = new google.maps.places.AutocompleteSessionToken();
+                } else {
+                    reject(`Geocoder failed: ${status}`);
+                }
+            });
+        });
+    },
+
+    getAddrDetails: function (addr) {
+        console.log("getAddrDetails called : " + addr);
+        return new Promise((resolve, reject) => {
+            if (!this.geocoder) {
+                this.initialize();
+            }
+
+            this.geocoder.geocode({ address: addr }, (results, status) => {
+                console.log([results, status]);
                 if (status === 'OK' && results[0]) {
                     const place = results[0];
 
