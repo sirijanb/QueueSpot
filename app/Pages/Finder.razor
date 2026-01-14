@@ -42,9 +42,10 @@
                 </div>
             @if (SelectedHospital is not null)
             {
-                
-            
+
+                <div class="col-8 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0" style="left:33.33333%; z-index:1000;">
                 <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
+                </div>
             }
 
         </div>
