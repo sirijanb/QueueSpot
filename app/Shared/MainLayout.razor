@@ -2,18 +2,17 @@
 
 <PageTitle>app</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAF1Vux7E3q3rPVOIKGbJCD1bpC86GtrZE&libraries=places,marker&callback=initMap&loading=async" async defer></script>
+<script>
+    function initMap() {
+        window.mapInitialized = true;
+    }
+</script>
+<script src="/js/placesSearch.js?2026011214"></script>
+<script src="/js/placesAutoComplete.js?2026011213"></script>
+<script src="/js/locationPermission.js"></script>
+<link href="/css/autoComplete.css" rel="stylesheet" />
+<link href="/css/main.css?2026011313" rel="stylesheet" />
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+@Body

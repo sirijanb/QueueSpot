@@ -1,0 +1,68 @@
+﻿@using app.Models
+
+<div class="p-4 h-100 w-100 hospital-details">
+
+    <div class="hospital-details-title tile">
+        <h3 class="fw-bold">
+            @Hospital.Name
+            <span><button class="close-button" @onclick="OnCloseButtonClick">×</button></span>
+        </h3>
+        <span></span>
+        <span class="badge bg-success mb-3">@Hospital.Status</span>
+
+        
+    </div>
+
+    <div class="container">
+       <div class="row">
+           <div class="col">
+               <div class="tile">
+               <p>Current ER Wait Time</p>
+                <b>@Hospital.EstimatedWait</b>
+                </div>
+           </div>
+
+            <div class="col ">
+                <div class="tile">
+                <p>Occupancy Status</p>
+                <b>00%</b>
+                </div>
+            </div>
+
+            <div class="col ">
+                <div class="tile">
+                <p>Available beds</p>
+                <b>@Hospital.BedsOpen</b> beds
+                </div>
+            </div>
+
+    
+        </div>
+
+        <!--<p><b>Distance:</b> @Hospital.Distance</p>-->
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="tile">
+                <h6 class="mt-4">Services</h6>
+                @foreach (var service in Hospital.Services)
+                {
+                    <span class="badge bg-primary me-1">@service</span>
+                }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Hospital Hospital { get; set; } = default!;
+    [Parameter] public EventCallback<MouseEventArgs> OnClickClose { get; set; }
+
+    private Task OnCloseButtonClick(MouseEventArgs args)
+    {
+        return OnClickClose.InvokeAsync(args);
+    }
+}
