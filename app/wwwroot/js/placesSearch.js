@@ -137,10 +137,11 @@
             });
 
             
+
             const contentString = `
                 <div style="max-width: 300px;">
                     <h6 style="margin: 0 0 8px 0; font-weight: bold;">${place.name}</h6>
-                    <p style="margin: 0 0 4px 0; font-size: 0.9em; color: #666;">${place.estimatedwait}</p>
+                    <p style="margin: 0 0 4px 0; font-size: 0.9em; color: #666;">${place.formattedAddress}</p>
                     
                     ${place.photos && place.photos.length > 0 ? `
                         <img src="${place.photos[0]}" style="width: 100%; max-height: 150px; object-fit: cover; margin-top: 8px; border-radius: 4px;" />
@@ -187,11 +188,13 @@
                 animation: google.maps.Animation.DROP
             });
 
+            console.log("Hospital adding markers");
+            console.log(hospital);
 
             const contentString = `
                 <div style="max-width: 300px;">
                     <h6 style="margin: 0 0 8px 0; font-weight: bold;">${hospital.name}</h6>
-                    <p style="margin: 0 0 4px 0; font-size: 0.9em; color: #666;">${hospital.estimatedwait}</p>
+                    <p style="margin: 0 0 4px 0; font-size: 0.9em; color: #666;">${hospital.estimatedWait}</p>
                     
                     ${hospital.photos && hospital.photos.length > 0 ? `
                         <img src="${hospital.photos[0]}" style="width: 100%; max-height: 150px; object-fit: cover; margin-top: 8px; border-radius: 4px;" />
