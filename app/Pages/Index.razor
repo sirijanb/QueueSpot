@@ -4,7 +4,7 @@
 @inject IJSRuntime JS
 
 <div class="container vh-100 d-flex align-items-center justify-content-center">
-    <div class="text-center w-75">
+    <div class="text-center w-50">
 
         <div class="mb-3">
             <i class="bi bi-hospital fs-1 text-primary"></i>
@@ -12,27 +12,57 @@
 
         <h1 class="fw-bold">Find Care Near You</h1>
         <p class="text-muted">
-            Locate nearest hospitals, check wait times, and get directions instantly.
+            Locate nearest hospitals and get directions instantly
         </p>
 
         <div class="input-group input-group-lg mt-4 shadow-sm">
             <!-- <span class="input-group-text bg-white">
                 <i class="bi bi-search"></i>
             </span> -->
-            
+
             <AddrSearch @bind-AddrValue="@addrValue" OnClick="Search" />
         </div>
 
         <div class="mt-3">
-            <button class="btn btn-outline-secondary btn-sm" @onclick="UseLocation">
-                @currentLocationString
+            <button
+                class="@((locateFailed ? "btn btn-outline-danger btn-sm locate-failed-btn" : "btn btn-outline-secondary btn-sm"))"
+                @onclick="UseLocation" disabled="@isLocating">
+                @if (isLocating)
+                {
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span>
+                            Locating
+                        </span>
+                        <span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+                    </div>
+                }
+                else
+                {
+                    @if (locateFailed)
+                    {
+                        <span class="">@currentLocationString</span>
+                    }
+                    else
+                    {
+                        @currentLocationString
+                    }
+                }
             </button>
+            @if (locateFailed)
+            {
+                <button class="btn btn-sm btn-outline-danger ms-2" title="Retry / Refresh" @onclick="RefreshPage">
+                    <span>Refresh</span>
+                    <i class="bi bi-arrow-clockwise" aria-hidden="true"></i>
+                </button>
+            }
         </div>
 
     </div>
 </div>
 
 @code {
+    bool isLocating = false;
+    bool locateFailed = false;
     string addrValue = "";
     string currentLocationString = "Use Current Location";
 
@@ -40,7 +70,11 @@
 
     async Task UseLocation()
     {
-        currentLocationString = "Locating...";
+        isLocating = true;
+        locateFailed = false;
+        currentLocationString = "Locating";
+        StateHasChanged();
+
         try
         {
 
@@ -48,33 +82,40 @@
 
             if (locationPermissionStatus == "denied")
             {
+                locateFailed = true;
                 currentLocationString = "Failed to locate";
                 Console.WriteLine("Error: Location access is blocked.");
                 //errorMessage = "Location access is blocked. Please enable it in your browser settings.";
-            } else {
+            }
+            else
+            {
 
                 var usersLoc = await JS.InvokeAsync<UserLocation>(
-                    "placesAutocomplete.getUserLocation"
+                "placesAutocomplete.getUserLocation"
                 );
 
                 var placeDetails = await JS.InvokeAsync<PlaceDetails>(
-                    "placesAutocomplete.getLocAddr",
-                    usersLoc.Latitude, usersLoc.Longitude
+                "placesAutocomplete.getLocAddr",
+                usersLoc.Latitude, usersLoc.Longitude
                 );
 
                 addrValue = placeDetails.FormattedAddress;
+                locateFailed = false;
                 currentLocationString = "Use Current Location";
                 Search();
             }
         }
         catch (Exception ex)
         {
+            locateFailed = true;
             currentLocationString = "Failed to locate";
             //errorMessage = "Error fetching address details";
             Console.WriteLine($"Error: {ex.Message}");
         }
         finally
         {
+            isLocating = false;
+            StateHasChanged();
         }
     }
 
@@ -84,9 +125,16 @@
         if (!string.IsNullOrWhiteSpace(addrValue))
         {
             Nav.NavigateTo($"/finder?query={Uri.EscapeDataString(addrValue)}");
-        } else
+        }
+        else
         {
         }
+    }
+
+    void RefreshPage()
+    {
+        // forceLoad true causes a full browser reload of the current URL
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
     }
 
 
