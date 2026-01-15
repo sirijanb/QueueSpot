@@ -1,1 +1,22 @@
-@page "/edit-hospital"
+@page "/admin/hospitals/edit/{HospitalID:int?}"
+@layout AdminLayout
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using app.Models
+@inject NavigationManager Nav
+@inject ProtectedSessionStorage Session
+
+<h1>Hospital Edit</h1>
+
+<div class="admin-container">
+    <div class="tile">
+        <div class="tile-container">
+            Contents here
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int HospitalID { get; set; }
+
+}
