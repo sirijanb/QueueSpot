@@ -10,13 +10,36 @@
 <div class="admin-container">
     <div class="tile">
         <div class="tile-container">
-            Contents here
+            <form>
+
+
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Input box</label>
+                            <input type="text" class="form-control w-100" placeholder="Input box" />
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Input box</label>
+                            <input type="text" class="form-control w-100" placeholder="Input box" />
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 @code {
     [Parameter]
-    public int HospitalID { get; set; }
+    public int HospitalID { get; set; } = 0;
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine(HospitalID);
+    }
 
 }
