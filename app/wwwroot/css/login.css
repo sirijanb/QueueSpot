@@ -1,0 +1,15 @@
+﻿body {
+}
+
+
+.login-intro {
+    background: #153159;
+    background: linear-gradient(180deg,rgba(21, 49, 89, 1) 0%, rgba(15, 23, 42, 1) 100%);
+    vertical-align:middle;
+}
+
+.login-intro div {
+    color:#fff;
+    font-size:22pt;
+    padding:25px;
+}

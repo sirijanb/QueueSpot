@@ -1,0 +1,24 @@
+﻿body {
+    background: #f6f7f8;
+}
+
+.admin-main-page {
+    padding:45px;
+}
+
+.admin-main-page h1 {
+    margin-top:45px;
+}
+.admin-container {
+    padding-top: 2em;
+}
+
+.tile { 
+    background:#fff;
+    border-radius:7px; 
+    overflow:hidden;
+}
+
+.tile-container {
+    padding:45px;
+}

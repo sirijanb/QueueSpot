@@ -1,1 +1,86 @@
-@page "/sign-up"
+@page "/admin/sign-up"
+@layout LoginLayout
+
+<h1>Management Account Registration</h1>
+<p>Please fill the following form to request your access to our system. Our team will verify and review your application and approve your request.</p>
+
+@if (string.IsNullOrEmpty(successfulMsg))
+{
+<form>
+    <div class="mb-3">
+        <label>Email Address</label>
+        <input type="text" class="form-control w-100" @bind="email"  />
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <input type="password" class="form-control w-100" @bind="password" />
+    </div>
+
+    <div class="mb-3">
+        <label>Password confirmation</label>
+        <input type="password" class="form-control w-100" @bind="passwordConfirm" />
+    </div>
+
+    <div class="mb-3">
+        <label>Name</label>
+        <input type="text" class="form-control w-100" @bind="name" />
+    </div>
+
+    <div class="mb-3">
+        <label>Contact</label>
+        <input type="text" placeholder="416-555-5555" class="form-control w-100" @bind="contact" />
+    </div>
+
+    <div class="mb-3">
+        <label>Hospital</label>
+        <input type="text" placeholder="" class="form-control w-100" @bind="hospital" />
+    </div>
+
+    <div class="mb-3">
+        <label>Employee ID</label>
+        <input type="text" placeholder="" class="form-control w-100" @bind="employeeID" />
+    </div>
+
+    @if(!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    <button class="btn btn-primary w-100" type="button" @onclick="OnSubmit">Request registration</button>
+
+    </form>
+} else
+{
+    <div class="alert alert-success" role="alert">
+        Thank you for your submission.
+
+        <p>@successfulMsg</p>
+    </div>
+}
+
+
+
+<div>
+    <a href="/admin/login">Back to login</a>
+</div>
+
+@code {
+    private string errorMessage = "";
+    private string successfulMsg = "";
+    private string email = "";
+    private string name = "";
+    private string contact = "";
+    private string hospital = "";
+    private string employeeID = "";
+    private string password = "";
+    private string passwordConfirm = "";
+
+    private async Task OnSubmit()
+    {
+        // Todo : Registration to the database after validation
+        successfulMsg = "You'll be contacted by our team for verification. Once your request is approved, you'll be able to access our system.";
+    }
+}
