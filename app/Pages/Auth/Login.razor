@@ -1,1 +1,58 @@
-@page "/login"
+@page "/admin/login"
+@layout LoginLayout
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using app.Models
+@inject NavigationManager Nav
+@inject ProtectedSessionStorage Session
+
+<PageTitle>Login</PageTitle>
+
+
+<h1>Management Login</h1>
+<p>Please enter your email address and password.</p>
+
+<form>
+    <div class="mb-3">
+        <label>Email Address</label>
+        <input type="text" class="form-control w-100" @bind="email" />
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <input type="password" class="form-control w-100" @bind="password" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    <button class="btn btn-primary w-100" type="button" @onclick="OnLogin">Sign in Dashboard</button>
+
+</form>
+
+<div>
+    <a href="/admin/sign-up">Registration</a>
+</div>
+@code {
+    private string email = "";
+    private string password = "";
+    private string errorMessage = "";
+
+    private async Task OnLogin()
+    {
+        // ToDo : Authenticate through backend
+        if (email == "admin" && password == "1234")
+        {
+            await Session.SetAsync("email", (object)email);
+            await Session.SetAsync("role", (object)"admin");
+            Nav.NavigateTo("/admin/dashboard");
+            return;
+        }
+        errorMessage = "Invalid Email or Password!";
+    }
+
+
+}

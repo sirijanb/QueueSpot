@@ -1,22 +1,32 @@
 ﻿@using app.Models
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+<style>
+    #addressInput:focus,
+    #addressInput:active {
+        outline: none !important;
+        box-shadow: none !important;
+        border-color: #ced4da !important;
+    }
 
+    #addressInput:focus-visible {
+        outline: 2px solid rgba(13, 110, 253, 0.25);
+        outline-offset: 2px;
+    }
+</style>
 
-<input class="form-control"
-       id="addressInput"
-       value="@searchText"
-       @oninput="OnInputChanged"
-       @onfocus="OnFocus"
-       placeholder="@Placeholder"
-       autocomplete="off" />
+<input class="form-control" id="addressInput" value="@searchText" @oninput="OnInputChanged" @onfocus="OnFocus"
+    placeholder="@Placeholder" autocomplete="off" />
 
 @if (isLoading)
 {
-    <div class="autocomplete-loading">
-        <span class="spinner-border spinner-border-sm"></span>
+    <div class="flex justify-content-center mt-2 mx-2 ">
+        <span class="spinner-border" role="status" aria-hidden="true"
+            style="width:1.7rem; height:1.7rem; border-width:.28rem;"></span>
     </div>
 }
+
+
 
 @if (showSuggestions && predictions != null && predictions.Count > 0)
 {
@@ -34,7 +44,8 @@
     </ul>
 }
 
-@if (showSuggestions && predictions != null && predictions.Count == 0 && !isLoading && searchText.Length >= MinCharacters)
+@if (showSuggestions && predictions != null && predictions.Count == 0 && !isLoading && searchText.Length >=
+MinCharacters)
 {
     <ul class="autocomplete-dropdown">
         <li class="no-results">No addresses found</li>
@@ -139,10 +150,10 @@
         try
         {
             var result = await JS.InvokeAsync<List<PlacePrediction>>(
-                "placesAutocomplete.getPlacePredictions",
-                cancellationToken,
-                input,
-                CountryCode
+            "placesAutocomplete.getPlacePredictions",
+            cancellationToken,
+            input,
+            CountryCode
             );
 
             predictions = result ?? new List<PlacePrediction>();
@@ -172,8 +183,8 @@
         try
         {
             var placeDetails = await JS.InvokeAsync<PlaceDetails>(
-                "placesAutocomplete.getPlaceDetails",
-                prediction.PlaceId
+            "placesAutocomplete.getPlaceDetails",
+            prediction.PlaceId
             );
 
             searchText = placeDetails.FormattedAddress;
