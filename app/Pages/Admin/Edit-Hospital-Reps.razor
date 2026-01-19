@@ -1,5 +1,6 @@
 ﻿@page "/admin/reps/edit/{HospitalRepID:int?}"
 @layout AdminLayout
+@using BlazorBootstrap
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using app.Models
 @inject NavigationManager Nav
@@ -7,16 +8,95 @@
 
 <h1>Hospital Representative Edit</h1>
 
+<ConfirmDialog @ref="dialog" />
+
 <div class="admin-container">
     <div class="tile">
         <div class="tile-container">
-            Contents here
+
+            <form class="w-80">
+                <div class="row mb-1">
+                    <div class="col-1">
+                        <img src="/images/hospital_pic_example.jpg" class="rounded-circle w-100" alt="Hospital Image">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Name</label>
+                            <input type="text" class="form-control w-100" placeholder="Input box" />
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Hospital Name</label>
+                            <input type="text" class="form-control w-100" placeholder="Input box" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Approval</label>
+                            <Switch Class="mt-2" @bind-Value="visible" />
+                        </div>
+                    </div>
+
+                </div>
+
+
+                
+            </form>
         </div>
     </div>
 </div>
 
+
+<div class="fixed-bottom bg-white shadow-sm ">
+    <div class="p-5">
+        <span class="float-end"><button class="btn btn-primary" type="button">Save</button></span>
+        <span class="float-end"><button class="btn btn-light" type="button" @onclick="OnClickCancel">Cancel</button></span>
+        @if (HospitalRepID != 0)
+        {
+            <span class="float-end"><button class="btn btn-danger" @onclick="ShowDialogAsync" type="button">Delete</button></span>
+        }
+    </div>
+</div>
+
+
 @code {
     [Parameter]
     public int HospitalRepID { get; set; }
+    private ConfirmDialog dialog = default!;
+    private bool visible = true;
+
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private async Task OnClickCancel()
+    {
+        Nav.NavigateTo("/admin/reps");
+    }
+
+    private async Task ShowDialogAsync()
+    {
+        var options = new ConfirmDialogOptions { IsScrollable = true, IsVerticallyCentered = true };
+        var confirmation = await dialog.ShowAsync("Are you sure?", "Are you sure to delete?", options);
+
+        if (confirmation)
+        {
+            Nav.NavigateTo("/admin/reps");
+        }
+        else
+        {
+            // do something
+        }
+    }
 
 }
