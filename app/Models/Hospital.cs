@@ -10,6 +10,8 @@
         public string BedsOpen { get; set; } = "";
         public string Status { get; set; } = "";
 
+        public string Address { get; set; } = "";
+
         public double Latitude { get; set; } = 0.0;
         public double Longitude { get; set; } = 0.0;
 

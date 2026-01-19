@@ -1,0 +1,30 @@
+﻿@using app.Models
+@using BlazorBootstrap
+@inject NavigationManager Nav
+
+<Card >
+    <ul class="list-group list-group-flush">
+    @for (int i = 0; i < 10; i++)
+    {
+
+        
+    
+        <li class="list-group-item" @onclick="OnClickRep">
+            <b>Hospital Rep Goes Here</b>
+                <span class="badge badge-pill badge-success">Approved</span>
+                <span>Anywhere Hospital</span>
+        </li>
+   
+
+        
+    }
+    </ul>
+
+</Card>
+
+@code {
+    private async Task OnClickRep()
+    {
+        Nav.NavigateTo("/admin/reps/edit/1");
+    }
+}

@@ -16,37 +16,43 @@
                    
             <HospitalMgmtList Hospitals="hospitals" ></HospitalMgmtList>
 
-            <Pagination TotalPages="100" />
+            <Pagination TotalPages="100" ActivePageNumber="@ActivePageNumber" PageChanged="OnPageChangedAsync" />
         </div>
     </div>
 </div>
 
 @code {
+    int ActivePageNumber = 1;
+
     List<Hospital> hospitals = new List<Hospital>();
 
     protected override void OnInitialized()
     {
-        hospitals.Add(new Hospital()
-        {
-            Name = "No name hospital 1",
-            Photo = "/images/hospital_pic_example.jpg",
-            Status = ""
-        });
 
-        hospitals.Add(new Hospital()
-        {
-            Name = "No name hospital 2",
-            Photo = "/images/hospital_pic_example.jpg",
-            Status = ""
-        });
+        LoadPage(ActivePageNumber);
 
-        hospitals.Add(new Hospital()
-        {
-            Name = "No name hospital 3",
-            Photo = "/images/hospital_pic_example.jpg",
-            Status = ""
-        });
+    }
 
+    public async Task OnPageChangedAsync(int newPageNumber)
+    {
+        ActivePageNumber = newPageNumber;
+        LoadPage(newPageNumber);
+    }
+
+    private void LoadPage(int page)
+    {
+        hospitals.Clear();
+        for (int i = (page - 1) * 10; i < (page * 10) + 10; i++)
+        {
+            hospitals.Add(new Hospital()
+            {
+                Id = i,
+                Name = "No name hospital " + i.ToString(),
+                Photo = "/images/hospital_pic_example.jpg",
+                Address = "555 Avenue Rd, Toronto, ON",
+                Status = ""
+            });
+        }
     }
 
     private void RegisterNewHospital()
