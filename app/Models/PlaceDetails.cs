@@ -2,7 +2,7 @@
 {
     public class PlaceDetails
     {
-        public string PlaceId { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
         public string FormattedAddress { get; set; } = string.Empty;
         public string StreetNumber { get; set; } = string.Empty;
         public string Route { get; set; } = string.Empty;
