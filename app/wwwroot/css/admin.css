@@ -2,8 +2,12 @@
     background: #f6f7f8;
 }
 
+main {
+
+}
+
 .admin-main-page {
-    padding:45px;
+    padding: 45px;
 }
 
 .admin-main-page h1 {
@@ -11,6 +15,7 @@
 }
 .admin-container {
     padding-top: 2em;
+    clear:both;
 }
 
 .tile { 
