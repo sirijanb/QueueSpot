@@ -2,57 +2,59 @@
 @layout LoginLayout
 
 <h1>Management Account Registration</h1>
-<p>Please fill the following form to request your access to our system. Our team will verify and review your application and approve your request.</p>
+<p>Please complete the form below to request access. Our team will review and approve your application.</p>
 
 @if (string.IsNullOrEmpty(successfulMsg))
 {
-<form>
-    <div class="mb-3">
-        <label>Email Address</label>
-        <input type="text" class="form-control w-100" @bind="email"  />
-    </div>
-
-    <div class="mb-3">
-        <label>Password</label>
-        <input type="password" class="form-control w-100" @bind="password" />
-    </div>
-
-    <div class="mb-3">
-        <label>Password confirmation</label>
-        <input type="password" class="form-control w-100" @bind="passwordConfirm" />
-    </div>
-
-    <div class="mb-3">
-        <label>Name</label>
-        <input type="text" class="form-control w-100" @bind="name" />
-    </div>
-
-    <div class="mb-3">
-        <label>Contact</label>
-        <input type="text" placeholder="416-555-5555" class="form-control w-100" @bind="contact" />
-    </div>
-
-    <div class="mb-3">
-        <label>Hospital</label>
-        <input type="text" placeholder="" class="form-control w-100" @bind="hospital" />
-    </div>
-
-    <div class="mb-3">
-        <label>Employee ID</label>
-        <input type="text" placeholder="" class="form-control w-100" @bind="employeeID" />
-    </div>
-
-    @if(!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger" role="alert">
-            @errorMessage
+    <form>
+        <div class="mb-3">
+            <label>Name</label>
+            <input type="text" class="form-control w-100" @bind="name" />
         </div>
-    }
+        <div class="mb-3">
+            <label>Email Address</label>
+            <input type="text" class="form-control w-100" @bind="email" />
+        </div>
 
-    <button class="btn btn-primary w-100" type="button" @onclick="OnSubmit">Request registration</button>
+        <div class="mb-3">
+            <label>Contact</label>
+            <input type="text" class="form-control w-100" placeholder="416-555-5555" @bind="contact" />
+        </div>
+
+        @* TODO:Better options like dropdown, autocomplete etc.     *@
+        <div class="mb-3">
+            <label>Hospital</label>
+            <input type="text" placeholder="e.g. Toronto General Hospital" class="form-control w-100" @bind=" hospital" />
+        </div>
+        <div class="mb-3">
+            <label>Employee ID</label>
+            <input type="text" placeholder="" class="form-control w-100" @bind="employeeID" />
+        </div>
+        <div class="mb-3">
+            <label>Password</label>
+            <input type="password" class="form-control w-100" @bind="password" />
+        </div>
+
+        <div class="mb-3">
+            <label>Confirm Password</label>
+            <input type="password" class="form-control w-100" @bind="passwordConfirm" />
+        </div>
+
+
+
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @errorMessage
+            </div>
+        }
+
+        <button class="btn btn-primary w-100 mt-3" type="button" @onclick="OnSubmit">Request registration</button>
 
     </form>
-} else
+}
+else
 {
     <div class="alert alert-success" role="alert">
         Thank you for your submission.
@@ -63,8 +65,8 @@
 
 
 
-<div>
-    <a href="/admin/login">Back to login</a>
+<div class="mt-4">
+    <a href="/admin/login">Already have an account? Back to login</a>
 </div>
 
 @code {
