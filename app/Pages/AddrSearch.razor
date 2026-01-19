@@ -173,7 +173,7 @@
         {
             var placeDetails = await JS.InvokeAsync<PlaceDetails>(
                 "placesAutocomplete.getPlaceDetails",
-                prediction.PlaceId
+                prediction.Id
             );
 
             searchText = placeDetails.FormattedAddress;

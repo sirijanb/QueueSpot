@@ -207,7 +207,7 @@
                 {
                     Id = i++,
                     Name = place.Name,
-                    PlaceID = place.PlaceId,
+                    PlaceID = place.Id,
                     Distance = String.Format("{0:0.00} km",distance(place.Latitude, place.Longitude)),
                     EstimatedWait = String.Format("{0} hours", new Random().Next(100)),
                     BedsOpen = "0 Avail",
