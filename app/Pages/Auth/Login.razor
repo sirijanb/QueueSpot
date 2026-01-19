@@ -8,33 +8,35 @@
 <PageTitle>Login</PageTitle>
 
 
-<h1>Management Login</h1>
-<p>Please enter your email address and password.</p>
-
+<h1 class="mb-5">Management Login</h1>
 <form>
-    <div class="mb-3">
-        <label>Email Address</label>
-        <input type="text" class="form-control w-100" @bind="email" />
-    </div>
+    <div class="flex justify-content-center">
 
-    <div class="mb-3">
-        <label>Password</label>
-        <input type="password" class="form-control w-100" @bind="password" />
-    </div>
-
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger" role="alert">
-            @errorMessage
+        <div class="mb-3">
+            <label>Email Address</label>
+            <input type="text" class="form-control w-100" @bind="email" />
         </div>
-    }
 
-    <button class="btn btn-primary w-100" type="button" @onclick="OnLogin">Sign in Dashboard</button>
+        <div class="mb-3">
+            <label>Password</label>
+            <input type="password" class="form-control w-100" @bind="password" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @errorMessage
+            </div>
+        }
+
+        <button class="btn btn-primary w-100 mt-3" type="button" @onclick="OnLogin">Sign in</button>
+    </div>
 
 </form>
 
-<div>
-    <a href="/admin/sign-up">Registration</a>
+<div class="my-4">
+    <a href="/admin/sign-up">Don’t have an account? Register your hospital
+    </a>
 </div>
 @code {
     private string email = "";
