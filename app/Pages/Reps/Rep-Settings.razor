@@ -1,9 +1,8 @@
-﻿@page "/admin/reps/edit/{HospitalRepID:int?}"
-@layout AdminLayout
+﻿@page "/rep/settings"
+@layout RepLayout
 @using BlazorBootstrap
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using app.Models
-
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager Nav
 @inject ProtectedSessionStorage Session
@@ -11,18 +10,16 @@
 
 <h1>Hospital Representative Edit</h1>
 
-<ConfirmDialog @ref="dialog" />
-
 <div class="admin-container">
     <div class="tile">
         <div class="tile-container">
 
             <form class="w-80">
-               <!--<div class="row mb-1">
-                    <div class="col-1">
-                        <img src="/images/hospital_pic_example.jpg" class="rounded-circle w-100" alt="Hospital Image">
-                    </div>
-                </div>-->
+                <!--<div class="row mb-1">
+                     <div class="col-1">
+                         <img src="/images/hospital_pic_example.jpg" class="rounded-circle w-100" alt="Hospital Image">
+                     </div>
+                 </div>-->
 
                 <div class="row">
                     <div class="col">
@@ -34,8 +31,8 @@
 
                     <div class="col">
                         <div class="mb-3">
-                            <label>Hospital Name</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.Lastname"  placeholder="Doe" />
+                            <label>Last Name</label>
+                            <input type="text" class="form-control w-100" @bind-value="representative.Lastname" placeholder="Doe" />
                         </div>
                     </div>
                 </div>
@@ -44,7 +41,7 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Email</label>
-                            <input type="email" class="form-control w-100" @bind-value="representative.Email" placeholder="jane@mail.com" />
+                            <input type="email" class="form-control w-100" value="@representative.Email" readonly placeholder="jane@mail.com" />
                         </div>
                     </div>
 
@@ -61,13 +58,7 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Hospital</label>
-                            <AutoComplete @bind-Value="hospitalName"
-                                          TItem="Hospital"
-                                          DataProvider="HospitalDataProvider"
-                                          PropertyName="Name"
-                                          Placeholder="e.g. Toronto General Hospital"
-                                          class="form-control w-100"
-                                          OnChanged="(Hospital h) => OnAutoCompleteChanged(h)" />
+                            <input type="email" class="form-control w-100" value="@representative.Hospital.Name" readonly placeholder="Hospital" />
                         </div>
                     </div>
 
@@ -78,22 +69,28 @@
                         </div>
                     </div>
 
-                    
+
                 </div>
 
 
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
-                            <label>Approval</label>
-                            <Switch Class="mt-2" @bind-Value="approval" />
+                            <label>Password</label>
+                            <input type="email" class="form-control w-100" @bind-value="PasswordChange" placeholder="Enter new password to change it" />
                         </div>
                     </div>
 
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Password(Confirmation)</label>
+                            <input type="text" class="form-control w-100" @bind-value="PasswordChangeConfirm"  placeholder="Retype the new password" />
+                        </div>
+                    </div>
                 </div>
 
 
-                
+
             </form>
         </div>
     </div>
@@ -103,11 +100,6 @@
 <div class="fixed-bottom bg-white shadow-sm ">
     <div class="p-5">
         <span class="float-end"><button class="btn btn-primary" type="button" @onclick="OnClickSave">Save</button></span>
-        <span class="float-end"><button class="btn btn-light" type="button" @onclick="OnClickCancel">Cancel</button></span>
-        @if (HospitalRepID != 0)
-        {
-            <span class="float-end"><button class="btn btn-danger" @onclick="ShowDialogAsync" type="button">Delete</button></span>
-        }
     </div>
 </div>
 
@@ -120,65 +112,67 @@
     private bool approval = false;
     private string hospitalName = "";
     private List<Hospital> hospitals = new List<Hospital>();
+    private string PasswordChange = "", PasswordChangeConfirm = "";
+    private string errorMessage = "";
+    private bool SuccessfulUpdate = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 
         if (firstRender)
         {
+            var currentSess = await Session.GetAsync<string>("email");
+            string? currentEmail = currentSess.Value;
+            if (currentEmail != null)
+            {
+                representative = dbContext.Representative.Where(h => h.Email == currentEmail).Include<Representative>("Hospital").First<Representative>();
+                approval = representative.Status == 1;
+                hospitalName = representative.Hospital.Name;
+            }
             hospitals = dbContext.Hospitals.Where(h => h.Visible == true).OrderBy(h => h.Name).ToList();
+            StateHasChanged();
             //hospitals = dbContext.Hospitals.OrderBy(h => h.Name).ToList();
         }
     }
 
     protected override void OnInitialized()
     {
-        if (HospitalRepID != 0)
-        {
-            representative = dbContext.Representative.Where(h => h.Id == HospitalRepID).Include<Representative>("Hospital").First<Representative>();
-            approval = representative.Status == 1;
-            hospitalName = representative.Hospital.Name;
-        }
+
     }
 
     private async Task OnClickSave()
     {
-        representative.Status = (approval ? 1 : 0);
-        if (HospitalRepID == 0)
+        errorMessage = "";
+        SuccessfulUpdate = false;
+        if(PasswordChange != "")
         {
-            dbContext.Representative.Add(representative);
-        }
-        else
-        {
-            dbContext.Representative.Update(representative);
+            if(PasswordChange == PasswordChangeConfirm)
+            {
+
+                representative.Password = PasswordChange;
+            }
+            else
+            {
+                errorMessage = "Password doesn't match!";
+            }
         }
 
+        dbContext.Representative.Update(representative);
+
+
         dbContext.SaveChanges();
-        Nav.NavigateTo("/admin/reps");
+        PasswordChange = "";
+        PasswordChangeConfirm = "";
+        SuccessfulUpdate = true;
+        //Nav.NavigateTo("/admin/reps");
     }
 
     private async Task OnClickCancel()
     {
-        
+
         Nav.NavigateTo("/admin/reps");
     }
 
-    private async Task ShowDialogAsync()
-    {
-        var options = new ConfirmDialogOptions { IsScrollable = true, IsVerticallyCentered = true };
-        var confirmation = await dialog.ShowAsync("Are you sure?", "Are you sure to delete?", options);
-
-        if (confirmation)
-        {
-            dbContext.Representative.Remove(representative);
-            dbContext.SaveChanges();
-            Nav.NavigateTo("/admin/reps");
-        }
-        else
-        {
-            // do something
-        }
-    }
 
     private async Task<AutoCompleteDataProviderResult<Hospital>> HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
     {

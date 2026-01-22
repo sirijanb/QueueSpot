@@ -1,0 +1,126 @@
+@page "/rep/hospital"
+@layout RepLayout
+@using BlazorBootstrap
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.EntityFrameworkCore
+@using app.Models
+@inject NavigationManager Nav
+@inject ProtectedSessionStorage Session
+@inject ApplicationDbContext dbContext
+
+<h1>Hospital Edit</h1>
+
+<ConfirmDialog @ref="dialog" />
+
+<div class="admin-container">
+    <div class="tile">
+        <div class="tile-container">
+            <form class="w-80">
+                <div class="row mb-1">
+                    <div class="col-1">
+                        <img src="@HospitalImage" class="rounded-circle w-100" alt="Hospital Image">
+                    </div>
+
+                    <div class="col-8">
+                        <h2>@hospital.Name</h2>
+                        <span>@hospital.Address</span>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Beds Available</label>
+                            <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen" placeholder="Input box" />
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Status</label>
+                            <input type="text" class="form-control w-100" @bind-value="hospital.Status" placeholder="Input box" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Estimated Wait Time (Min)</label>
+                            <input type="text" class="form-control w-100" @bind-value="hospital.EstimatedWait" placeholder="Input box" />
+                        </div>
+                    </div>
+
+                </div>
+
+                @if (SuccessfulUpdate)
+                {
+                    <div class="alert alert-success" role="alert">
+                        The Hospital Information has been updated.
+                    </div>
+                }
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="fixed-bottom bg-white shadow-sm ">
+    <div class="p-5">
+        <span class="float-end"><button class="btn btn-primary" type="button" @onclick="OnClickSave">Update</button></span>
+       
+    </div>
+</div>
+
+@code {
+    private ConfirmDialog dialog = default!;
+    private Hospital hospital = new Hospital();
+    private Representative representative = new Representative();
+    private bool visible = true;
+    private bool SuccessfulUpdate = false;
+    private string HospitalImage = "/images/hospital_pic_example_grey.jpg";
+
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            var currentSess = await Session.GetAsync<string>("email");
+            string? currentEmail = currentSess.Value;
+            if (currentEmail != null)
+            {
+                Console.WriteLine("Hospital info from : {0}", currentEmail);
+                representative = dbContext.Representative.Where(r => r.Email == currentEmail).Include<Representative>("Hospital").First<Representative>();
+                hospital = representative.Hospital;
+                if (!string.IsNullOrEmpty(hospital.Photo))
+                {
+                    HospitalImage = hospital.Photo;
+                }
+                Console.WriteLine("Reps hospital : {0}", hospital.Name);
+                StateHasChanged();
+            } else
+            {
+                Console.WriteLine("Current email is null");
+            }
+        }
+    }
+
+    private async Task OnClickSave()
+    {
+
+        dbContext.Hospitals.Update(hospital);
+
+
+        dbContext.SaveChanges();
+        SuccessfulUpdate = true;
+        //Nav.NavigateTo("/rep/hospital");
+    }
+
+}

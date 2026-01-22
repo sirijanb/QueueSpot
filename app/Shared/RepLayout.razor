@@ -7,14 +7,13 @@
 <link href="/css/admin.css" rel="stylesheet" />
 
 <div class="navbar navbar-expand-lg navbar-light bg-white">
-    <NavMenu OnClickLogout="Logout" />
+    <RepNavMenu OnClickLogout="Logout" />
 </div>
 
 <div class="admin-main-page">
     
 
     <div>
-
         @Body
     </div>
 </div>
@@ -34,9 +33,9 @@
                 return;
             }
 
-            if ("rep" == currentRole)
+            if ("admin" == currentRole)
             {
-                Nav.NavigateTo("/rep/hospital");
+                Nav.NavigateTo("/admin/dashboard");
                 return;
             }
         }
