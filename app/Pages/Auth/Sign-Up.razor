@@ -1,5 +1,9 @@
 @page "/admin/sign-up"
 @layout LoginLayout
+@using app.Models
+@using BlazorBootstrap
+@using System.Net.Mail
+@inject ApplicationDbContext dbContext
 
 <h1>Management Account Registration</h1>
 <p>Please complete the form below to request access. Our team will review and approve your application.</p>
@@ -8,31 +12,42 @@
 {
     <form>
         <div class="mb-3">
-            <label>Name</label>
-            <input type="text" class="form-control w-100" @bind="name" />
+            <label>First Name</label>
+            <input type="text" class="form-control w-100" @bind="representative.Firstname" />
+        </div>
+
+        <div class="mb-3">
+            <label>Last Name</label>
+            <input type="text" class="form-control w-100" @bind="representative.Lastname" />
         </div>
         <div class="mb-3">
             <label>Email Address</label>
-            <input type="text" class="form-control w-100" @bind="email" />
+            <input type="email" class="form-control w-100" @bind="representative.Email" />
         </div>
 
         <div class="mb-3">
             <label>Contact</label>
-            <input type="text" class="form-control w-100" placeholder="416-555-5555" @bind="contact" />
+            <input type="text" class="form-control w-100" placeholder="416-555-5555" @bind="representative.Contact" />
         </div>
 
         @* TODO:Better options like dropdown, autocomplete etc.     *@
         <div class="mb-3">
             <label>Hospital</label>
-            <input type="text" placeholder="e.g. Toronto General Hospital" class="form-control w-100" @bind=" hospital" />
+            <AutoComplete @bind-Value="hospitalName"
+                      TItem="Hospital"
+                      DataProvider="HospitalDataProvider"
+                      PropertyName="Name"
+                          Placeholder="e.g. Toronto General Hospital"
+                          class="form-control w-100"
+                      OnChanged="(Hospital h) => OnAutoCompleteChanged(h)" />
         </div>
         <div class="mb-3">
             <label>Employee ID</label>
-            <input type="text" placeholder="" class="form-control w-100" @bind="employeeID" />
+            <input type="text" placeholder="" class="form-control w-100" @bind="representative.EmployeeID" />
         </div>
         <div class="mb-3">
             <label>Password</label>
-            <input type="password" class="form-control w-100" @bind="password" />
+            <input type="password" class="form-control w-100" @bind="representative.Password" />
         </div>
 
         <div class="mb-3">
@@ -72,17 +87,93 @@ else
 @code {
     private string errorMessage = "";
     private string successfulMsg = "";
-    private string email = "";
-    private string name = "";
-    private string contact = "";
-    private string hospital = "";
-    private string employeeID = "";
-    private string password = "";
     private string passwordConfirm = "";
+    private string hospitalName = "";
+    private Representative representative = new Representative();
+    private List<Hospital> hospitals = new List<Hospital>();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            hospitals = dbContext.Hospitals.Where(h => h.Visible == true).OrderBy(h => h.Name).ToList();
+            //hospitals = dbContext.Hospitals.OrderBy(h => h.Name).ToList();
+        }
+    }
+
+    private async Task<AutoCompleteDataProviderResult<Hospital>> HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
+    {
+
+        return await Task.FromResult(request.ApplyTo(hospitals.OrderBy(h => h.Name)));
+    }
+
+    private void OnAutoCompleteChanged(Hospital h)
+    {
+        representative.Hospital = h;
+
+    }
+
+
 
     private async Task OnSubmit()
     {
-        // Todo : Registration to the database after validation
+        errorMessage = "";
+        if (representative.Firstname.Trim().Length < 1)
+        {
+            errorMessage = "Please enter your first name";
+            return;
+        }
+
+        representative.Email = representative.Email.Trim();
+
+        if (representative.Email.Length < 1)
+        {
+            errorMessage = "Please enter your email address.";
+            return;
+        }
+
+        MailAddress emailInfo;
+
+        try
+        {
+            emailInfo = new MailAddress(representative.Email.ToString());
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Invalid email address. A valid email address should look like jane@mail.com";
+            return;
+        }
+
+        if (!representative.Email.Contains(".") || representative.Email.EndsWith(".") || representative.Email != emailInfo.Address)
+        {
+            errorMessage = "Invalid email address. A valid email address should look like jane@mail.com";
+            return;
+        }
+
+        var exitingID = dbContext.Representative.Where(h => h.Email == representative.Email).Count<Representative>();
+
+        if (exitingID >= 1)
+        {
+            errorMessage = "The email address you entered is already registered. Please log in with the email address.";
+            return;
+        }
+
+        if (representative.Password != passwordConfirm)
+        {
+            errorMessage = "Password does not match!";
+            return;
+        }
+
+        if (representative.Hospital == null || representative.Hospital.Id == 0)
+        {
+            errorMessage = "Please search and choose a hospital!";
+            return;
+        }
+
+        dbContext.Representative.Add(representative);
+        dbContext.SaveChanges();
+
         successfulMsg = "You'll be contacted by our team for verification. Once your request is approved, you'll be able to access our system.";
     }
 }

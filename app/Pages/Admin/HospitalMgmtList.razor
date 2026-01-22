@@ -1,20 +1,20 @@
 ﻿@using app.Models
 
-<div class="row">
+<div class="row" @attributes="AllOtherAttributes">
     @for (int i = 0;i < Hospitals.Count; i ++)
     {
-        
+       
         <div class="col">
             <a class="card mb-3" href="/admin/hospitals/edit/@Hospitals[i].Id" @onclick="OnChooseHospital">
                 <div class="row g-0">
                     <div class="col-md-4">
-                        <img src="@Hospitals[i].Photo" class="img-fluid rounded-start" alt="@Hospitals[i].Name">
+                        <img src="@(string.IsNullOrEmpty(Hospitals[i].Photo) ? "/images/hospital_pic_example_grey.jpg" : Hospitals[i].Photo)" class="card-image-fixer img-fluid rounded-start" alt="@Hospitals[i].Name">
                     </div>
                     <div class="col-md-8">
                         <div class="card-body">
                             <h5 class="card-title">@Hospitals[i].Name</h5>
-                            <p class="card-text">@Hospitals[i].Status</p>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                            <p class="card-text">@Hospitals[i].Address</p>
+                            <p class="card-text"><small class="text-body-secondary">@(Hospitals[i].Visible == true ? "Visible" : "Hidden")</small></p>
                         </div>
                     </div>
                 </div>
@@ -31,6 +31,9 @@
 @code {
     [Parameter]
     public List<Hospital> Hospitals { get; set; } = new List<Hospital>();
+
+    [Parameter(CaptureUnmatchedValues = true)]// Catches all undefined parameters here
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
 
 
     [Parameter] public EventCallback<MouseEventArgs> OnSelect { get; set; }

@@ -29,6 +29,10 @@ namespace app.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("BedsOpen")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -66,6 +70,9 @@ namespace app.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Visible")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -168,6 +175,10 @@ namespace app.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PlaceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PriceLevel")
                         .HasColumnType("int");
 
@@ -186,6 +197,51 @@ namespace app.Migrations
                     b.ToTable("PlaceResults");
                 });
 
+            modelBuilder.Entity("app.Models.Representative", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Firstname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HospitalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Lastname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HospitalId");
+
+                    b.ToTable("Representative");
+                });
+
             modelBuilder.Entity("app.Models.UserLocation", b =>
                 {
                     b.Property<string>("Id")
@@ -200,6 +256,22 @@ namespace app.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserLocation");
+                });
+
+            modelBuilder.Entity("app.Models.Representative", b =>
+                {
+                    b.HasOne("app.Models.Hospital", "Hospital")
+                        .WithMany("Representatives")
+                        .HasForeignKey("HospitalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hospital");
+                });
+
+            modelBuilder.Entity("app.Models.Hospital", b =>
+                {
+                    b.Navigation("Representatives");
                 });
 #pragma warning restore 612, 618
         }

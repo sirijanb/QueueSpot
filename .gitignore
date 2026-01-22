@@ -81,3 +81,4 @@ wwwroot/uploads/
 *.nuget.g.props
 *.nuget.g.targets
 project.assets.json
+appsettings.json

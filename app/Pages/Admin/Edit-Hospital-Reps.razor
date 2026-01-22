@@ -3,8 +3,11 @@
 @using BlazorBootstrap
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using app.Models
+
+@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Nav
 @inject ProtectedSessionStorage Session
+@inject ApplicationDbContext dbContext
 
 <h1>Hospital Representative Edit</h1>
 
@@ -15,26 +18,67 @@
         <div class="tile-container">
 
             <form class="w-80">
-                <div class="row mb-1">
+               <!--<div class="row mb-1">
                     <div class="col-1">
                         <img src="/images/hospital_pic_example.jpg" class="rounded-circle w-100" alt="Hospital Image">
                     </div>
-                </div>
+                </div>-->
 
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
-                            <label>Name</label>
-                            <input type="text" class="form-control w-100" placeholder="Input box" />
+                            <label>First Name</label>
+                            <input type="text" class="form-control w-100" @bind-value="representative.Firstname" placeholder="Jane" />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
                             <label>Hospital Name</label>
-                            <input type="text" class="form-control w-100" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="representative.Lastname"  placeholder="Doe" />
                         </div>
                     </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email" class="form-control w-100" @bind-value="representative.Email" placeholder="jane@mail.com" />
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Contact</label>
+                            <input type="text" class="form-control w-100" @bind-value="representative.Contact" placeholder="416-555-5555" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Hospital</label>
+                            <AutoComplete @bind-Value="hospitalName"
+                                          TItem="Hospital"
+                                          DataProvider="HospitalDataProvider"
+                                          PropertyName="Name"
+                                          Placeholder="e.g. Toronto General Hospital"
+                                          class="form-control w-100"
+                                          OnChanged="(Hospital h) => OnAutoCompleteChanged(h)" />
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Employee ID</label>
+                            <input type="email" class="form-control w-100" @bind-value="representative.EmployeeID" placeholder="Employee ID" />
+                        </div>
+                    </div>
+
+                    
                 </div>
 
 
@@ -42,7 +86,7 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Approval</label>
-                            <Switch Class="mt-2" @bind-Value="visible" />
+                            <Switch Class="mt-2" @bind-Value="approval" />
                         </div>
                     </div>
 
@@ -58,7 +102,7 @@
 
 <div class="fixed-bottom bg-white shadow-sm ">
     <div class="p-5">
-        <span class="float-end"><button class="btn btn-primary" type="button">Save</button></span>
+        <span class="float-end"><button class="btn btn-primary" type="button" @onclick="OnClickSave">Save</button></span>
         <span class="float-end"><button class="btn btn-light" type="button" @onclick="OnClickCancel">Cancel</button></span>
         @if (HospitalRepID != 0)
         {
@@ -72,15 +116,49 @@
     [Parameter]
     public int HospitalRepID { get; set; }
     private ConfirmDialog dialog = default!;
-    private bool visible = true;
+    private Representative representative = new Representative();
+    private bool approval = false;
+    private string hospitalName = "";
+    private List<Hospital> hospitals = new List<Hospital>();
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            hospitals = dbContext.Hospitals.Where(h => h.Visible == true).OrderBy(h => h.Name).ToList();
+            //hospitals = dbContext.Hospitals.OrderBy(h => h.Name).ToList();
+        }
+    }
 
     protected override void OnInitialized()
     {
+        if (HospitalRepID != 0)
+        {
+            representative = dbContext.Representative.Where(h => h.Id == HospitalRepID).Include<Representative>("Hospital").First<Representative>();
+            approval = representative.Status == 1;
+            hospitalName = representative.Hospital.Name;
+        }
+    }
+    
+    private async Task OnClickSave()
+    {
+        if (HospitalRepID == 0)
+        {
+            dbContext.Representative.Add(representative);
+        }
+        else
+        {
+            dbContext.Representative.Update(representative);
+        }
+
+        dbContext.SaveChanges();
+        Nav.NavigateTo("/admin/reps");
     }
 
     private async Task OnClickCancel()
     {
+        
         Nav.NavigateTo("/admin/reps");
     }
 
@@ -91,6 +169,8 @@
 
         if (confirmation)
         {
+            dbContext.Representative.Remove(representative);
+            dbContext.SaveChanges();
             Nav.NavigateTo("/admin/reps");
         }
         else
@@ -98,5 +178,18 @@
             // do something
         }
     }
+
+    private async Task<AutoCompleteDataProviderResult<Hospital>> HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
+    {
+
+        return await Task.FromResult(request.ApplyTo(hospitals.OrderBy(h => h.Name)));
+    }
+
+    private void OnAutoCompleteChanged(Hospital h)
+    {
+        representative.Hospital = h;
+
+    }
+
 
 }

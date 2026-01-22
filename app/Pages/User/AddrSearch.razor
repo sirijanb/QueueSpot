@@ -18,6 +18,7 @@
 <input class="form-control" id="addressInput" value="@searchText" @oninput="OnInputChanged" @onfocus="OnFocus"
     placeholder="@Placeholder" autocomplete="off" />
 
+ 
 @if (isLoading)
 {
     <div class="flex justify-content-center mt-2 mx-2 ">
@@ -54,7 +55,7 @@ MinCharacters)
 
 
 
-<button class="btn btn-primary" @onclick="OnClick" @ondblclick="OnDbClick">
+<button class="btn btn-primary" type="button" @onclick="OnClick" @ondblclick="OnDbClick">
     Search
 </button>
 
@@ -143,6 +144,7 @@ MinCharacters)
         {
             await AddrValueChanged.InvokeAsync(searchText);
         }
+        AddrValue = searchText;
     }
 
     private async Task GetPredictions(string input, CancellationToken cancellationToken)
@@ -179,22 +181,27 @@ MinCharacters)
         isLoading = true;
         errorMessage = string.Empty;
         StateHasChanged();
+        AddrValue = searchText;
 
         try
         {
-            var placeDetails = await JS.InvokeAsync<PlaceDetails>(
+            /*var placeDetails = await JS.InvokeAsync<PlaceDetails>(
             "placesAutocomplete.getPlaceDetails",
             prediction.Id
             );
 
             searchText = placeDetails.FormattedAddress;
+            Console.WriteLine("searchText : {0}", searchText);
+            AddrValue = searchText;
 
-            await OnAddressSelected.InvokeAsync(placeDetails);
+            Console.WriteLine("AddrValue : {0}", AddrValue);
+            */
+            //await OnAddressSelected.InvokeAsync(placeDetails);
         }
         catch (Exception ex)
         {
             errorMessage = "Error fetching address details";
-            Console.WriteLine($"Error: {ex.Message}");
+            Console.WriteLine($"Error while selecting prediction: {ex.Message}");
         }
         finally
         {
