@@ -2,7 +2,10 @@
 @layout AdminLayout
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using app.Models
+@using BlazorBootstrap
+@using Microsoft.EntityFrameworkCore
 @inject NavigationManager Nav
+@inject ApplicationDbContext dbContext
 @inject ProtectedSessionStorage Session
 
 <h1>Hospital Representatives</h1>
@@ -10,7 +13,69 @@
 <div class="admin-container">
     <div class="tile">
         <div class="tile-container">
-            <RepMgmtList />
+            <div class="float-end " style="margin-bottom:10px;"><TextInput @bind-Value="@searchText"  Placeholder="Enter text" @onkeydown="OnSearchBarDown" /></div>
+            <div class="clearfix"></div>
+            <RepMgmtList Representatives="representatives" />
+             <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber" style="margin-top:10px;" PageChanged="OnPageChangedAsync" />
         </div>
     </div>
 </div>
+
+@code {
+    int ActivePageNumber = 1;
+    int TotalPages = 1;
+    string searchText = "";
+    List<Representative> representatives = new List<Representative>();
+
+    protected override void OnInitialized()
+    {
+        UpdatePages();
+        LoadPage(ActivePageNumber);
+
+    }
+
+    private void UpdatePages()
+    {
+        int TotalArticles = dbContext.Representative.Where(h => EF.Functions.Like(h.Firstname, $"%{searchText}%")).Count<Representative>();
+        TotalPages = (int)Math.Ceiling((double)TotalArticles / 10.0);
+    }
+
+    public async Task OnPageChangedAsync(int newPageNumber)
+    {
+        ActivePageNumber = newPageNumber;
+        LoadPage(newPageNumber);
+    }
+
+    public async Task OnSearchBarDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await RepSearch();
+        }
+    }
+
+    private async Task RepSearch()
+    {
+        UpdatePages();
+        LoadPage(ActivePageNumber);
+    }
+
+    private void LoadPage(int page)
+    {
+        representatives.Clear();
+        representatives = dbContext.Representative
+        .Where(h => EF.Functions.Like(h.Firstname, $"%{searchText}%"))
+        .Include<Representative>("Hospital")
+        .OrderBy(h => h.Id)
+        .Skip((page - 1) * 10)
+        .Take(10)
+        .ToList();
+
+    }
+
+    private void RegisterNewRep()
+    {
+        Nav.NavigateTo("/admin/reps/edit");
+    }
+
+}
