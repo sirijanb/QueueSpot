@@ -5,6 +5,7 @@
 @using app.Models
 @inject NavigationManager Nav
 @inject ProtectedSessionStorage Session
+@inject ApplicationDbContext dbContext
 
 <h1>Hospital Edit</h1>
 
@@ -16,7 +17,7 @@
             <form class="w-80">
                 <div class="row mb-1">
                     <div class="col-1">
-                        <img src="/images/hospital_pic_example.jpg" class="rounded-circle w-100" alt="Hospital Image">
+                        <img src="@HospitalImage" class="rounded-circle w-100" alt="Hospital Image">
                     </div>
                 </div>
 
@@ -24,14 +25,30 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Hospital Name</label>
-                            <input type="text" class="form-control w-100" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.Name" placeholder="Input box" />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
                             <label>Address</label>
-                            <input type="text" class="form-control w-100" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.Address" placeholder="Input box" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Beds Available</label>
+                            <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen" placeholder="Input box" />
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="mb-3">
+                            <label>Status</label>
+                            <input type="text" class="form-control w-100" @bind-value="hospital.Status" placeholder="Input box" />
                         </div>
                     </div>
                 </div>
@@ -41,7 +58,7 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Visible</label>
-                            <Switch Class="mt-2" @bind-Value="visible" />
+                            <Switch Class="mt-2" @bind-Value="hospital.Visible" />
                         </div>
                     </div>
 
@@ -56,7 +73,7 @@
 
 <div class="fixed-bottom bg-white shadow-sm ">
     <div class="p-5">
-        <span class="float-end"><button class="btn btn-primary" type="button">Save</button></span> 
+        <span class="float-end"><button class="btn btn-primary" type="button" @onclick="OnClickSave">Save</button></span> 
         <span class="float-end"><button class="btn btn-light" type="button" @onclick="OnClickCancel">Cancel</button></span> 
         @if (HospitalID != 0)
         {
@@ -69,6 +86,7 @@
     private ConfirmDialog dialog = default!;
     private Hospital hospital = new Hospital();
     private bool visible = true;
+    private string HospitalImage = "/images/hospital_pic_example_grey.jpg";
 
     [Parameter]
     public int HospitalID { get; set; } = 0;
@@ -76,6 +94,30 @@
     protected override void OnInitialized()
     {
         Console.WriteLine(HospitalID);
+
+        if(HospitalID != 0)
+        {
+            hospital = dbContext.Hospitals.Where(h => h.Id == HospitalID).First<Hospital>();
+            if(!string.IsNullOrEmpty(hospital.Photo))
+            {
+                HospitalImage = hospital.Photo; 
+            }
+        }
+    }
+
+    private async Task OnClickSave()
+    {
+        if (HospitalID == 0)
+        {
+            dbContext.Hospitals.Add(hospital);
+        }
+        else
+        {
+            dbContext.Hospitals.Update(hospital);
+        }
+
+        dbContext.SaveChanges();
+        Nav.NavigateTo("/admin/hospitals");
     }
 
     private async Task OnClickCancel()
@@ -90,6 +132,7 @@
 
         if (confirmation)
         {
+            dbContext.Hospitals.Remove(hospital);
             Nav.NavigateTo("/admin/hospitals");
         }
         else

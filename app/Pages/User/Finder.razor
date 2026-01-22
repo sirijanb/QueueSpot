@@ -1,6 +1,7 @@
 ﻿@page "/finder"
 @using app.Models
 @inject NavigationManager Nav
+@inject ApplicationDbContext dbContext
 @inject IJSRuntime JS
 
 
@@ -58,7 +59,8 @@
 
     Hospital? SelectedHospital;
 
-    private int radiusKm = 5;
+
+    private int radiusKm = 30;
     private bool isSearching = false;
     private string errorMessage = string.Empty;
     private List<PlaceResult>? places;
@@ -67,6 +69,8 @@
     private bool mapInitialized = false;
 
     List<Hospital> Hospitals = new List<Hospital>();
+
+    Hospital Tmp, ExistingHospital;
 
     protected override void OnInitialized()
     {
@@ -169,12 +173,23 @@
 
             associateHospitalInfo();
 
+            searchNearbyHospitals();
+
             await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
 
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error searching places: {ex.Message}";
+
+            if (ex.Message.Contains("ZERO_RESULTS"))
+            {
+                errorMessage = $"We couldn't find a hospital. Please try to search again with a correct address.";
+            }
+            else
+            {
+
+                errorMessage = $"Error searching places: {ex.Message}";
+            }
             DisplayQuery = errorMessage;
             places = null;
         }
@@ -194,30 +209,77 @@
 
     }
 
+    private void searchNearbyHospitals()
+    {
+        Hospitals = new List<Hospital>();
+        double latRange = 0.0349;
+        double lngRange = 0.0483;
+        double minLat = currentLat - latRange, maxLat = currentLat + latRange;
+        double minLng = currentLng - lngRange, maxLng = currentLng + lngRange;
+        dbContext.Database.EnsureCreated();
+        Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng && h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
+        foreach(var hospital in Hospitals)
+        {
+            hospital.Distance = String.Format("{0:0.00} km", distance(hospital.Latitude, hospital.Longitude));
+        }
+    }
+
+
     private void associateHospitalInfo()
     {
         int i = 1; // Temp number
+        int existing = 0;
         Hospitals = new List<Hospital>();
+
+        dbContext.Database.EnsureCreated();
+
+        //var depts = (from d in dbContext.Hospitals select new { Name = d.Name }).ToList();
 
         if(places != null && places.Count > 0)
         {
-            foreach(var place in places)
+            foreach (var place in places)
             {
-                Hospitals.Add(new Hospital
+                Console.WriteLine("Place ID : " + place.PlaceId);
+                Tmp = dbContext.Hospitals.Where(h => h.PlaceID == place.PlaceId).FirstOrDefault<Hospital>();
+
+                if (Tmp == null || Tmp.Id == 0)
                 {
-                    Id = i++,
-                    Name = place.Name,
-                    PlaceID = place.Id,
-                    Distance = String.Format("{0:0.00} km",distance(place.Latitude, place.Longitude)),
-                    EstimatedWait = String.Format("{0} hours", new Random().Next(100)),
-                    BedsOpen = "0 Avail",
-                    Status = "Unavailable",
-                    Latitude = place.Latitude, Longitude = place.Longitude,
-                    Photo = (place.Photos.Count > 0 ? place.Photos[0] : ""),
-                    Services = new() { "Cardiology", "Neurology" }
-                });
+
+
+                    Tmp = new Hospital
+                        {
+                            Name = place.Name,
+                            PlaceID = place.PlaceId,
+                            Address = place.Address,
+                            Distance = String.Format("{0:0.00} km", distance(place.Latitude, place.Longitude)),
+                            EstimatedWait = String.Format("{0} hours", new Random().Next(100)),
+                            BedsOpen = "0 Avail",
+                            Status = "Unavailable",
+                            Latitude = place.Latitude,
+                            Longitude = place.Longitude,
+                            Photo = (place.Photos.Count > 0 ? place.Photos[0] : ""),
+                            Visible = false,
+                            Services = new() { "Cardiology", "Neurology" }
+                        };
+                    dbContext.Hospitals.Add(Tmp);
+                }
+
+                /*existing = (from d in dbContext.Hospitals where d.PlaceID == tmp.PlaceID select new { PlaceId = d.PlaceID }).Count();
+                if (existing < 1) {
+                    dbContext.Hospitals.Add(tmp);
+                    }*/
+
+                //if (Tmp.Visible == true) {
+                    //Hospitals.Add(Tmp);
+                //}
+
+                
             }
+
+            dbContext.SaveChanges();
         } 
+
+
     }
 
     private double distance(double targetLat, double targetLng)

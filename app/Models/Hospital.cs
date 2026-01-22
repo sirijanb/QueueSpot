@@ -16,7 +16,13 @@
         public double Longitude { get; set; } = 0.0;
 
         public string Photo { get; set; } = "";
+
+        public bool Visible { get; set; } = true;
+
+        public virtual List<Representative> Representatives { get; set; }
         public List<string> Services { get; set; } = new();
+
+
     }
 
 }

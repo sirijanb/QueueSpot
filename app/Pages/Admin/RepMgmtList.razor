@@ -2,17 +2,17 @@
 @using BlazorBootstrap
 @inject NavigationManager Nav
 
-<Card >
+<Card @attributes="AllOtherAttributes">
     <ul class="list-group list-group-flush">
-    @for (int i = 0; i < 10; i++)
+    @foreach (var rep in Representatives)
     {
 
-        
-    
-        <li class="list-group-item" @onclick="OnClickRep">
-            <b>Hospital Rep Goes Here</b>
+
+
+            <li class="list-group-item" style="cursor:pointer;" @onclick="(e) => OnClickRep(rep.Id)">
+                <b>@rep.Firstname @rep.Lastname</b>
                 <span class="badge badge-pill badge-success">Approved</span>
-                <span>Anywhere Hospital</span>
+                <span>@(rep.Hospital == null ? "" : rep.Hospital.Name)</span>
         </li>
    
 
@@ -23,8 +23,16 @@
 </Card>
 
 @code {
-    private async Task OnClickRep()
+
+    [Parameter]
+    public List<Representative> Representatives { get; set; } = new List<Representative>();
+
+    [Parameter(CaptureUnmatchedValues = true)]// Catches all undefined parameters here
+    public Dictionary<string, object> AllOtherAttributes { get; set; }
+
+    private void OnClickRep(int Id)
     {
-        Nav.NavigateTo("/admin/reps/edit/1");
+        
+        Nav.NavigateTo("/admin/reps/edit/" + Id.ToString());
     }
 }

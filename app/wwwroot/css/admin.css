@@ -27,3 +27,13 @@ main {
 .tile-container {
     padding:45px;
 }
+
+.card-image-fixer {
+    width: 202px;
+    height: 15vh; 
+    object-fit: cover;
+}
+
+.tile a {
+    text-decoration:none;
+}
