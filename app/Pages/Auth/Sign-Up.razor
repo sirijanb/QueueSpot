@@ -1,4 +1,5 @@
 @page "/admin/sign-up"
+<PageTitle>Sign Up - QueueSpot</PageTitle>
 @layout LoginLayout
 @using app.Models
 @using BlazorBootstrap
@@ -33,13 +34,9 @@
         @* TODO:Better options like dropdown, autocomplete etc.     *@
         <div class="mb-3">
             <label>Hospital</label>
-            <AutoComplete @bind-Value="hospitalName"
-                      TItem="Hospital"
-                      DataProvider="HospitalDataProvider"
-                      PropertyName="Name"
-                          Placeholder="e.g. Toronto General Hospital"
-                          class="form-control w-100"
-                      OnChanged="(Hospital h) => OnAutoCompleteChanged(h)" />
+            <AutoComplete @bind-Value="hospitalName" TItem="Hospital" DataProvider="HospitalDataProvider"
+                PropertyName="Name" Placeholder="e.g. Toronto General Hospital" class="form-control w-100"
+                OnChanged="(Hospital h) => OnAutoCompleteChanged(h)" />
         </div>
         <div class="mb-3">
             <label>Employee ID</label>
@@ -102,7 +99,8 @@ else
         }
     }
 
-    private async Task<AutoCompleteDataProviderResult<Hospital>> HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
+    private async Task<AutoCompleteDataProviderResult<Hospital>>
+    HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
     {
 
         return await Task.FromResult(request.ApplyTo(hospitals.OrderBy(h => h.Name)));
@@ -145,7 +143,8 @@ else
             return;
         }
 
-        if (!representative.Email.Contains(".") || representative.Email.EndsWith(".") || representative.Email != emailInfo.Address)
+        if (!representative.Email.Contains(".") || representative.Email.EndsWith(".") || representative.Email !=
+        emailInfo.Address)
         {
             errorMessage = "Invalid email address. A valid email address should look like jane@mail.com";
             return;

@@ -1,4 +1,6 @@
 @page "/admin/reps"
+<PageTitle>Representatives - QueueSpot</PageTitle>
+
 @layout AdminLayout
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using app.Models
@@ -13,10 +15,13 @@
 <div class="admin-container">
     <div class="tile">
         <div class="tile-container">
-            <div class="float-end " style="margin-bottom:10px;"><TextInput @bind-Value="@searchText"  Placeholder="Enter text" @onkeydown="OnSearchBarDown" /></div>
+            <div class="float-end " style="margin-bottom:10px;">
+                <TextInput @bind-Value="@searchText" Placeholder="Enter text" @onkeydown="OnSearchBarDown" />
+            </div>
             <div class="clearfix"></div>
             <RepMgmtList Representatives="representatives" />
-             <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber" style="margin-top:10px;" PageChanged="OnPageChangedAsync" />
+            <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber" style="margin-top:10px;"
+                PageChanged="OnPageChangedAsync" />
         </div>
     </div>
 </div>
@@ -36,7 +41,8 @@
 
     private void UpdatePages()
     {
-        int TotalArticles = dbContext.Representative.Where(h => EF.Functions.Like(h.Firstname, $"%{searchText}%")).Count<Representative>();
+        int TotalArticles = dbContext.Representative.Where(h => EF.Functions.Like(h.Firstname,
+        $"%{searchText}%")).Count<Representative>();
         TotalPages = (int)Math.Ceiling((double)TotalArticles / 10.0);
     }
 

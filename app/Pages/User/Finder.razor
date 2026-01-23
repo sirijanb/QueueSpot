@@ -1,4 +1,6 @@
 ﻿@page "/finder"
+<PageTitle>Find Hospitals | QueueSpot</PageTitle>
+
 @using app.Models
 @inject NavigationManager Nav
 @inject ApplicationDbContext dbContext
@@ -14,7 +16,7 @@
             <h5 class="fw-bold mb-3">Hospitals Near You</h5>
 
             <div class="input-group input-group-lg mt-4 shadow-sm">
-         
+
                 <AddrSearch @bind-AddrValue="@DisplayQuery" OnAddressSelected="SearchPlaces" OnClick="SearchPlaces" />
             </div>
 
@@ -25,12 +27,11 @@
 
             <hr />
 
-            <div class="" >
-            @foreach (var hospital in Hospitals)
-            {
-                <HospitalCard Hospital="hospital"
-                              OnSelect="SelectHospital" />
-            }
+            <div class="">
+                @foreach (var hospital in Hospitals)
+                {
+                    <HospitalCard Hospital="hospital" OnSelect="SelectHospital" />
+                }
             </div>
 
         </div>
@@ -40,12 +41,13 @@
 
 
             <div id="map" class="h-100 d-flex align-items-center justify-content-center bg-light">
-                </div>
+            </div>
             @if (SelectedHospital is not null)
             {
 
-                <div class="col-8 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0" style="left:33.33333%; z-index:1000;">
-                <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
+                <div class="col-8 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0"
+                    style="left:33.33333%; z-index:1000;">
+                    <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
                 </div>
             }
 
@@ -76,7 +78,7 @@
     {
         var uri = Nav.ToAbsoluteUri(Nav.Uri);
         var query = Microsoft.AspNetCore.WebUtilities
-            .QueryHelpers.ParseQuery(uri.Query);
+        .QueryHelpers.ParseQuery(uri.Query);
 
         if (query.TryGetValue("query", out var value))
         {
@@ -132,7 +134,7 @@
     private async Task SearchPlaces()
     {
 
-        if(isSearching)
+        if (isSearching)
         {
 
             return;
@@ -151,8 +153,8 @@
         {
 
             var place = await JS.InvokeAsync<PlaceDetails>(
-                "placesAutocomplete.getAddrDetails",
-                DisplayQuery
+            "placesAutocomplete.getAddrDetails",
+            DisplayQuery
             );
 
             currentLat = place.Latitude;
@@ -163,11 +165,11 @@
 
 
             places = await JS.InvokeAsync<List<PlaceResult>>(
-                "placesSearch.searchNearbyPlacesNew",
-                currentLat,
-                currentLng,
-                radius,
-                includedTypes
+            "placesSearch.searchNearbyPlacesNew",
+            currentLat,
+            currentLng,
+            radius,
+            includedTypes
             );
 
 
@@ -217,8 +219,9 @@
         double minLat = currentLat - latRange, maxLat = currentLat + latRange;
         double minLng = currentLng - lngRange, maxLng = currentLng + lngRange;
         dbContext.Database.EnsureCreated();
-        Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng && h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
-        foreach(var hospital in Hospitals)
+        Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng &&
+        h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
+        foreach (var hospital in Hospitals)
         {
             hospital.Distance = String.Format("{0:0.00} km", distance(hospital.Latitude, hospital.Longitude));
         }
@@ -235,7 +238,7 @@
 
         //var depts = (from d in dbContext.Hospitals select new { Name = d.Name }).ToList();
 
-        if(places != null && places.Count > 0)
+        if (places != null && places.Count > 0)
         {
             foreach (var place in places)
             {
@@ -247,37 +250,37 @@
 
 
                     Tmp = new Hospital
-                        {
-                            Name = place.Name,
-                            PlaceID = place.PlaceId,
-                            Address = place.Address,
-                            Distance = String.Format("{0:0.00} km", distance(place.Latitude, place.Longitude)),
-                            EstimatedWait = String.Format("{0} hours", new Random().Next(100)),
-                            BedsOpen = "0 Avail",
-                            Status = "Unavailable",
-                            Latitude = place.Latitude,
-                            Longitude = place.Longitude,
-                            Photo = (place.Photos.Count > 0 ? place.Photos[0] : ""),
-                            Visible = false,
-                            Services = new() { "Cardiology", "Neurology" }
-                        };
+                    {
+                        Name = place.Name,
+                        PlaceID = place.PlaceId,
+                        Address = place.Address,
+                        Distance = String.Format("{0:0.00} km", distance(place.Latitude, place.Longitude)),
+                        EstimatedWait = String.Format("{0} hours", new Random().Next(100)),
+                        BedsOpen = "0 Avail",
+                        Status = "Unavailable",
+                        Latitude = place.Latitude,
+                        Longitude = place.Longitude,
+                        Photo = (place.Photos.Count > 0 ? place.Photos[0] : ""),
+                        Visible = false,
+                        Services = new() { "Cardiology", "Neurology" }
+                    };
                     dbContext.Hospitals.Add(Tmp);
                 }
 
                 /*existing = (from d in dbContext.Hospitals where d.PlaceID == tmp.PlaceID select new { PlaceId = d.PlaceID }).Count();
                 if (existing < 1) {
-                    dbContext.Hospitals.Add(tmp);
-                    }*/
+                dbContext.Hospitals.Add(tmp);
+                }*/
 
                 //if (Tmp.Visible == true) {
-                    //Hospitals.Add(Tmp);
+                //Hospitals.Add(Tmp);
                 //}
 
-                
+
             }
 
             dbContext.SaveChanges();
-        } 
+        }
 
 
     }
@@ -289,8 +292,8 @@
         double dLon = (targetLng - currentLng) * Math.PI / 180;
 
         double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                  Math.Cos(currentLat * Math.PI / 180) * Math.Cos(targetLat * Math.PI / 180) *
-                  Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        Math.Cos(currentLat * Math.PI / 180) * Math.Cos(targetLat * Math.PI / 180) *
+        Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
 
         double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
         double distance = R * c;
