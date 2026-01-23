@@ -1,4 +1,6 @@
 @page "/admin/hospitals"
+<PageTitle>Hospital Lists - QueueSpot</PageTitle>
+
 @layout AdminLayout
 @using BlazorBootstrap
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
@@ -10,17 +12,21 @@
 
 <h1>Hospital Management</h1>
 
-<span class="float-end"><button class="btn btn-primary" type="button" @onclick="RegisterNewHospital">New Hospital</button></span>
+<span class="float-end"><button class="btn btn-primary" type="button" @onclick="RegisterNewHospital">New
+        Hospital</button></span>
 
 <div class="admin-container">
     <div class="tile">
         <div class="tile-container">
-            
-            <div class="float-end " style="margin-bottom:10px;"><TextInput @bind-Value="@searchText"  Placeholder="Enter text" @onkeyup="OnSearchBarDown" /></div>
+
+            <div class="float-end " style="margin-bottom:10px;">
+                <TextInput @bind-Value="@searchText" Placeholder="Enter text" @onkeyup="OnSearchBarDown" />
+            </div>
             <div class="clearfix"></div>
             <HospitalMgmtList Hospitals="hospitals"></HospitalMgmtList>
 
-            <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber" PageChanged="OnPageChangedAsync" />
+            <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber"
+                PageChanged="OnPageChangedAsync" />
         </div>
     </div>
 </div>
@@ -64,20 +70,20 @@
 
         /*for (int i = (page - 1) * 10; i < (page * 10) + 10; i++)
         {
-            hospitals.Add(new Hospital()
-            {
-                Id = i,
-                Name = "No name hospital " + i.ToString(),
-                Photo = "/images/hospital_pic_example.jpg",
-                Address = "555 Avenue Rd, Toronto, ON",
-                Status = ""
-                });
-            }*/
+        hospitals.Add(new Hospital()
+        {
+        Id = i,
+        Name = "No name hospital " + i.ToString(),
+        Photo = "/images/hospital_pic_example.jpg",
+        Address = "555 Avenue Rd, Toronto, ON",
+        Status = ""
+        });
+        }*/
     }
 
     private void RegisterNewHospital()
     {
-        Nav.NavigateTo("/admin/hospitals/edit");   
+        Nav.NavigateTo("/admin/hospitals/edit");
     }
 
     private void UpdatePages()
