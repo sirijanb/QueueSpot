@@ -22,6 +22,8 @@
         public virtual List<Representative> Representatives { get; set; }
         public List<string> Services { get; set; } = new();
 
+        public virtual List<HospitalService> HospitalServices { get; set; }
+
 
     }
 
