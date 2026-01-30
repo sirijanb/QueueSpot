@@ -1,0 +1,27 @@
+﻿<input type="text" id="tag_input_test" class="form-control w-100"  placeholder="Input box" />
+
+<script type="text/javascript">
+        var elt = $('#tag_input_test');
+    elt.tagsinput({
+        typeahead: {
+          source: ['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo']
+        },
+      tagClass: (item) => "badge",
+      itemValue: 'value',
+      itemText: 'text'
+      
+    });
+    elt.tagsinput('add', { "value": 1 , "text": "Emergency"});3
+    elt.tagsinput('add', { "value": 4 , "text": "Internal Medicine"});
+    elt.tagsinput('add', { "value": 7 , "text": "Traumatology"});
+    elt.tagsinput('add', { "value": 10, "text": "Beijing"   });
+    elt.tagsinput('add', { "value": 13, "text": "Cairo"   });
+    
+    elt.change((evt) => {
+        console.log(elt.val());
+    });
+</script>
+
+@code {
+
+}

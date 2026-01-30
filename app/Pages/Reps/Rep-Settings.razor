@@ -58,14 +58,14 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Hospital</label>
-                            <input type="email" class="form-control w-100" value="@representative.Hospital.Name" readonly placeholder="Hospital" />
+                            <input type="text" class="form-control w-100" value="@hospitalName" readonly placeholder="Hospital" />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
                             <label>Employee ID</label>
-                            <input type="email" class="form-control w-100" @bind-value="representative.EmployeeID" placeholder="Employee ID" />
+                            <input type="text" class="form-control w-100" @bind-value="representative.EmployeeID" placeholder="Employee ID" />
                         </div>
                     </div>
 
@@ -77,19 +77,30 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Password</label>
-                            <input type="email" class="form-control w-100" @bind-value="PasswordChange" placeholder="Enter new password to change it" />
+                            <input type="password" class="form-control w-100" @bind-value="PasswordChange" placeholder="Enter new password to change it" />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
                             <label>Password(Confirmation)</label>
-                            <input type="text" class="form-control w-100" @bind-value="PasswordChangeConfirm"  placeholder="Retype the new password" />
+                            <input type="password" class="form-control w-100" @bind-value="PasswordChangeConfirm"  placeholder="Retype the new password" />
                         </div>
                     </div>
                 </div>
+                @if(!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger" role="alert">
+                        There was an error while updating your information : @errorMessage
+                    </div>
+                }
 
-
+                @if (SuccessfulUpdate)
+                {
+                    <div class="alert alert-success" role="alert">
+                        Your Information has been updated.
+                    </div>
+                }
 
             </form>
         </div>
@@ -107,7 +118,6 @@
 @code {
     [Parameter]
     public int HospitalRepID { get; set; }
-    private ConfirmDialog dialog = default!;
     private Representative representative = new Representative();
     private bool approval = false;
     private string hospitalName = "";
@@ -154,6 +164,7 @@
             else
             {
                 errorMessage = "Password doesn't match!";
+                return;
             }
         }
 

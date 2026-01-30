@@ -2,10 +2,9 @@
 {
     public class HospitalService
     {
-        public int ServiceId { get; set; } = 0;
+        public int Id { get; set; }
+        public string ServiceName { get; set; } = "";
 
-        public virtual Hospital Hospital { get; set; } = null!;
-
-
+        public virtual List<HospitalServiceAssignment>? Assignments { get; set; }
     }
 }

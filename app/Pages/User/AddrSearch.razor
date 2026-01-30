@@ -185,6 +185,8 @@ MinCharacters)
 
         try
         {
+
+            await JS.InvokeVoidAsync("document.getElementById(\"addressInput\").change");
             /*var placeDetails = await JS.InvokeAsync<PlaceDetails>(
             "placesAutocomplete.getPlaceDetails",
             prediction.Id

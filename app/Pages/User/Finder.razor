@@ -1,5 +1,6 @@
 ﻿@page "/finder"
 @using app.Models
+@using BlazorBootstrap
 @inject NavigationManager Nav
 @inject ApplicationDbContext dbContext
 @inject IJSRuntime JS
@@ -12,10 +13,20 @@
         <div class="col-4 border-end p-3 vh-100 overflow-scroll">
 
             <h5 class="fw-bold mb-3">Hospitals Near You</h5>
-
+            
             <div class="input-group input-group-lg mt-4 shadow-sm">
          
                 <AddrSearch @bind-AddrValue="@DisplayQuery" OnAddressSelected="SearchPlaces" OnClick="SearchPlaces" />
+                @*
+                <Dropdown  Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>Filter</DropdownToggleButton>
+    <DropdownMenu>
+        @foreach(var hospitalService in hospitalServices) {
+            <DropdownItem To="@String.Format("javascript:FilterSelected(\"{0}\", \"{1}\");", hospitalService.Id, hospitalService.ServiceName)"  Type="DropdownItemType.Link" >@hospitalService.ServiceName</DropdownItem>                            
+                        }
+    </DropdownMenu>
+</Dropdown>
+*@
             </div>
 
             <small class="text-muted">
@@ -53,13 +64,22 @@
 
     </div>
 </div>
+<input type="input" id="hospitalFilter" @bind-value="hospitalFilter" @bind-value:after="HospitalFilterChanged" />
+
+<script type="text/javascript">
+    FilterSelected = (number, label) => {
+        console.log("filter updated : " + label );
+        document.getElementById('hospitalFilter').value = number + "," + label;
+        document.getElementById('hospitalFilter').blur();
+    }
+</script>
 
 @code {
     string DisplayQuery = "your location";
 
     Hospital? SelectedHospital;
 
-
+    private string hospitalFilter = "";
     private int radiusKm = 30;
     private bool isSearching = false;
     private string errorMessage = string.Empty;
@@ -69,6 +89,7 @@
     private bool mapInitialized = false;
 
     List<Hospital> Hospitals = new List<Hospital>();
+    List<HospitalService> hospitalServices = new List<HospitalService>();
 
     Hospital Tmp, ExistingHospital;
 
@@ -83,9 +104,11 @@
             DisplayQuery = value!;
         }
 
+
+        
     }
 
-
+    
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -95,6 +118,8 @@
         {
             try
             {
+                hospitalServices = dbContext.HospitalServices.ToList<HospitalService>();
+
                 // Wait for Google Maps to load
                 await Task.Delay(500);
 
@@ -120,6 +145,8 @@
                 StateHasChanged();
             }
         }
+
+
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -171,7 +198,7 @@
             );
 
 
-            associateHospitalInfo();
+            //associateHospitalInfo();
 
             searchNearbyHospitals();
 
@@ -207,6 +234,12 @@
         //await JS.InvokeVoidAsync("placesSearch.reDrawMap", null, true);
         //await JS.InvokeVoidAsync("placesSearch.setCentre", currentLat, currentLng, 13);
 
+    }
+
+    private void HospitalFilterChanged()
+    {
+        
+        Console.WriteLine("Selected : " + hospitalFilter);
     }
 
     private void searchNearbyHospitals()
