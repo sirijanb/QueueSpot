@@ -1,4 +1,5 @@
 ﻿@page "/finder"
+@using Microsoft.EntityFrameworkCore
 @using app.Models
 @using BlazorBootstrap
 @inject NavigationManager Nav
@@ -17,6 +18,17 @@
             <div class="input-group input-group-lg mt-4 shadow-sm">
          
                 <AddrSearch @bind-AddrValue="@DisplayQuery" OnAddressSelected="SearchPlaces" OnClick="SearchPlaces" />
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter
+                    </button>
+                    <ul class="dropdown-menu">
+                        @foreach (var hospitalService in hospitalServices) {
+                            <li><a class="dropdown-item" @onclick="() => { HospitalFilterChanged(hospitalService); }">@hospitalService.ServiceName</a></li>
+                        }
+                       
+                    </ul>
+                </div>
                 @*
                 <Dropdown  Color="DropdownColor.Secondary">
                     <DropdownToggleButton>Filter</DropdownToggleButton>
@@ -64,15 +76,6 @@
 
     </div>
 </div>
-<input type="input" id="hospitalFilter" @bind-value="hospitalFilter" @bind-value:after="HospitalFilterChanged" />
-
-<script type="text/javascript">
-    FilterSelected = (number, label) => {
-        console.log("filter updated : " + label );
-        document.getElementById('hospitalFilter').value = number + "," + label;
-        document.getElementById('hospitalFilter').blur();
-    }
-</script>
 
 @code {
     string DisplayQuery = "your location";
@@ -105,10 +108,10 @@
         }
 
 
-        
+
     }
 
-    
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -236,21 +239,35 @@
 
     }
 
-    private void HospitalFilterChanged()
+    private void HospitalFilterChanged(HospitalService selectedHospitalService)
     {
-        
-        Console.WriteLine("Selected : " + hospitalFilter);
+        searchNearbyHospitals(selectedHospitalService);
+        //await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
+        Console.WriteLine("Selected : " + selectedHospitalService.ServiceName);
     }
 
-    private void searchNearbyHospitals()
+    private void searchNearbyHospitals(HospitalService? selectedHospitalService = null)
     {
         Hospitals = new List<Hospital>();
-        double latRange = 0.0349;
-        double lngRange = 0.0483;
+        double latRange = 0.0698;
+        double lngRange = 0.0800;
         double minLat = currentLat - latRange, maxLat = currentLat + latRange;
         double minLng = currentLng - lngRange, maxLng = currentLng + lngRange;
         dbContext.Database.EnsureCreated();
-        Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng && h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
+        if (selectedHospitalService == null) { 
+            Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng && h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
+        } 
+        else
+        {
+
+            Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng && h.Longitude <= maxLng) && h.Visible == true && h.HospitalServices.Any(hs => hs.Service == selectedHospitalService))
+            .Include(h => h.HospitalServices)
+            .ThenInclude(hs => hs.Service)
+            .ToList<Hospital>();
+        }
+
+        Console.WriteLine("Count : " + Hospitals.Count.ToString());
+        
         foreach(var hospital in Hospitals)
         {
             hospital.Distance = String.Format("{0:0.00} km", distance(hospital.Latitude, hospital.Longitude));
