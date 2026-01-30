@@ -239,10 +239,10 @@
 
     }
 
-    private void HospitalFilterChanged(HospitalService selectedHospitalService)
+    private async Task HospitalFilterChanged(HospitalService selectedHospitalService)
     {
         searchNearbyHospitals(selectedHospitalService);
-        //await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
+        await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
         Console.WriteLine("Selected : " + selectedHospitalService.ServiceName);
     }
 
