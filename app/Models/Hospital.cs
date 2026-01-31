@@ -19,8 +19,10 @@
 
         public bool Visible { get; set; } = true;
 
-        public virtual List<Representative> Representatives { get; set; }
+        public virtual List<Representative>? Representatives { get; set; }
         public List<string> Services { get; set; } = new();
+
+        public virtual List<HospitalServiceAssignment>? HospitalServices { get; set; }
 
 
     }
