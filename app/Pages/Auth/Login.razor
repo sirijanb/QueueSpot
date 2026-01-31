@@ -1,4 +1,5 @@
 @page "/admin/login"
+<PageTitle>Login - QueueSpot</PageTitle>
 @layout LoginLayout
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using app.Models
@@ -57,13 +58,15 @@
             await Session.SetAsync("role", (object)"admin");
             Nav.NavigateTo("/admin/dashboard");
             return;
-        } else
+        }
+        else
         {
-            representative = dbContext.Representative.Where(h => h.Email == email && h.Password == password).FirstOrDefault<Representative>();
+            representative = dbContext.Representative.Where(h => h.Email == email && h.Password ==
+            password).FirstOrDefault<Representative>();
 
-            if(representative != null && representative.Id != 0)
+            if (representative != null && representative.Id != 0)
             {
-                if(representative.Status == 0)
+                if (representative.Status == 0)
                 {
                     SigninText = "Sign in";
                     errorMessage = "Your registration request is still under review. Please wait until your request is approved.";

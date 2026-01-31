@@ -1,4 +1,6 @@
 ﻿@page "/finder"
+<PageTitle>Find Hospitals | QueueSpot</PageTitle>
+
 @using Microsoft.EntityFrameworkCore
 @using app.Models
 @using BlazorBootstrap
@@ -16,7 +18,7 @@
             <h5 class="fw-bold mb-3">Hospitals Near You</h5>
             
             <div class="input-group input-group-lg mt-4 shadow-sm">
-         
+
                 <AddrSearch @bind-AddrValue="@DisplayQuery" OnAddressSelected="SearchPlaces" OnClick="SearchPlaces" />
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -48,12 +50,11 @@
 
             <hr />
 
-            <div class="" >
-            @foreach (var hospital in Hospitals)
-            {
-                <HospitalCard Hospital="hospital"
-                              OnSelect="SelectHospital" />
-            }
+            <div class="">
+                @foreach (var hospital in Hospitals)
+                {
+                    <HospitalCard Hospital="hospital" OnSelect="SelectHospital" />
+                }
             </div>
 
         </div>
@@ -63,12 +64,13 @@
 
 
             <div id="map" class="h-100 d-flex align-items-center justify-content-center bg-light">
-                </div>
+            </div>
             @if (SelectedHospital is not null)
             {
 
-                <div class="col-8 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0" style="left:33.33333%; z-index:1000;">
-                <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
+                <div class="col-8 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0"
+                    style="left:33.33333%; z-index:1000;">
+                    <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
                 </div>
             }
 
@@ -100,7 +102,7 @@
     {
         var uri = Nav.ToAbsoluteUri(Nav.Uri);
         var query = Microsoft.AspNetCore.WebUtilities
-            .QueryHelpers.ParseQuery(uri.Query);
+        .QueryHelpers.ParseQuery(uri.Query);
 
         if (query.TryGetValue("query", out var value))
         {
@@ -162,7 +164,7 @@
     private async Task SearchPlaces()
     {
 
-        if(isSearching)
+        if (isSearching)
         {
 
             return;
@@ -181,8 +183,8 @@
         {
 
             var place = await JS.InvokeAsync<PlaceDetails>(
-                "placesAutocomplete.getAddrDetails",
-                DisplayQuery
+            "placesAutocomplete.getAddrDetails",
+            DisplayQuery
             );
 
             currentLat = place.Latitude;
@@ -193,11 +195,11 @@
 
 
             places = await JS.InvokeAsync<List<PlaceResult>>(
-                "placesSearch.searchNearbyPlacesNew",
-                currentLat,
-                currentLng,
-                radius,
-                includedTypes
+            "placesSearch.searchNearbyPlacesNew",
+            currentLat,
+            currentLng,
+            radius,
+            includedTypes
             );
 
 
@@ -285,7 +287,7 @@
 
         //var depts = (from d in dbContext.Hospitals select new { Name = d.Name }).ToList();
 
-        if(places != null && places.Count > 0)
+        if (places != null && places.Count > 0)
         {
             foreach (var place in places)
             {
@@ -316,18 +318,18 @@
 
                 /*existing = (from d in dbContext.Hospitals where d.PlaceID == tmp.PlaceID select new { PlaceId = d.PlaceID }).Count();
                 if (existing < 1) {
-                    dbContext.Hospitals.Add(tmp);
-                    }*/
+                dbContext.Hospitals.Add(tmp);
+                }*/
 
                 //if (Tmp.Visible == true) {
-                    //Hospitals.Add(Tmp);
+                //Hospitals.Add(Tmp);
                 //}
 
-                
+
             }
 
             dbContext.SaveChanges();
-        } 
+        }
 
 
     }
@@ -339,8 +341,8 @@
         double dLon = (targetLng - currentLng) * Math.PI / 180;
 
         double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                  Math.Cos(currentLat * Math.PI / 180) * Math.Cos(targetLat * Math.PI / 180) *
-                  Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        Math.Cos(currentLat * Math.PI / 180) * Math.Cos(targetLat * Math.PI / 180) *
+        Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
 
         double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
         double distance = R * c;
