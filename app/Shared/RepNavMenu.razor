@@ -1,0 +1,18 @@
+﻿<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="">  <i class="bi bi-hospital fs-1 text-primary"></i></div>
+    <div class="navbar-nav">
+       <a href="javascript:void(0);" class="nav-item nav-link">&nbsp;</a>
+        <a class="nav-item nav-link" href="/rep/hospital">Hospitals</a>
+        <a class="nav-item nav-link" href="/rep/settings">Settings</a>
+        <a class="nav-item nav-link" href="#" @onclick="OnLogoutClick">Logout</a>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback<MouseEventArgs> OnClickLogout { get; set; }
+
+    private Task OnLogoutClick(MouseEventArgs args)
+    {
+        return OnClickLogout.InvokeAsync(args);
+    }
+}

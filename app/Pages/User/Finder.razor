@@ -1,7 +1,9 @@
 ﻿@page "/finder"
 <PageTitle>Find Hospitals | QueueSpot</PageTitle>
 
+@using Microsoft.EntityFrameworkCore
 @using app.Models
+@using BlazorBootstrap
 @inject NavigationManager Nav
 @inject ApplicationDbContext dbContext
 @inject IJSRuntime JS
@@ -14,10 +16,31 @@
         <div class="col-4 border-end p-3 vh-100 overflow-scroll">
 
             <h5 class="fw-bold mb-3">Hospitals Near You</h5>
-
+            
             <div class="input-group input-group-lg mt-4 shadow-sm">
 
                 <AddrSearch @bind-AddrValue="@DisplayQuery" OnAddressSelected="SearchPlaces" OnClick="SearchPlaces" />
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter
+                    </button>
+                    <ul class="dropdown-menu">
+                        @foreach (var hospitalService in hospitalServices) {
+                            <li><a class="dropdown-item" @onclick="() => { HospitalFilterChanged(hospitalService); }">@hospitalService.ServiceName</a></li>
+                        }
+                       
+                    </ul>
+                </div>
+                @*
+                <Dropdown  Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>Filter</DropdownToggleButton>
+    <DropdownMenu>
+        @foreach(var hospitalService in hospitalServices) {
+            <DropdownItem To="@String.Format("javascript:FilterSelected(\"{0}\", \"{1}\");", hospitalService.Id, hospitalService.ServiceName)"  Type="DropdownItemType.Link" >@hospitalService.ServiceName</DropdownItem>                            
+                        }
+    </DropdownMenu>
+</Dropdown>
+*@
             </div>
 
             <small class="text-muted">
@@ -61,7 +84,7 @@
 
     Hospital? SelectedHospital;
 
-
+    private string hospitalFilter = "";
     private int radiusKm = 30;
     private bool isSearching = false;
     private string errorMessage = string.Empty;
@@ -71,6 +94,7 @@
     private bool mapInitialized = false;
 
     List<Hospital> Hospitals = new List<Hospital>();
+    List<HospitalService> hospitalServices = new List<HospitalService>();
 
     Hospital Tmp, ExistingHospital;
 
@@ -85,6 +109,8 @@
             DisplayQuery = value!;
         }
 
+
+
     }
 
 
@@ -97,6 +123,8 @@
         {
             try
             {
+                hospitalServices = dbContext.HospitalServices.ToList<HospitalService>();
+
                 // Wait for Google Maps to load
                 await Task.Delay(500);
 
@@ -122,6 +150,8 @@
                 StateHasChanged();
             }
         }
+
+
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -173,7 +203,7 @@
             );
 
 
-            associateHospitalInfo();
+            //associateHospitalInfo();
 
             searchNearbyHospitals();
 
@@ -211,17 +241,36 @@
 
     }
 
-    private void searchNearbyHospitals()
+    private async Task HospitalFilterChanged(HospitalService selectedHospitalService)
+    {
+        searchNearbyHospitals(selectedHospitalService);
+        await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
+        Console.WriteLine("Selected : " + selectedHospitalService.ServiceName);
+    }
+
+    private void searchNearbyHospitals(HospitalService? selectedHospitalService = null)
     {
         Hospitals = new List<Hospital>();
-        double latRange = 0.0349;
-        double lngRange = 0.0483;
+        double latRange = 0.0698;
+        double lngRange = 0.0800;
         double minLat = currentLat - latRange, maxLat = currentLat + latRange;
         double minLng = currentLng - lngRange, maxLng = currentLng + lngRange;
         dbContext.Database.EnsureCreated();
-        Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng &&
-        h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
-        foreach (var hospital in Hospitals)
+        if (selectedHospitalService == null) { 
+            Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng && h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
+        } 
+        else
+        {
+
+            Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng && h.Longitude <= maxLng) && h.Visible == true && h.HospitalServices.Any(hs => hs.Service == selectedHospitalService))
+            .Include(h => h.HospitalServices)
+            .ThenInclude(hs => hs.Service)
+            .ToList<Hospital>();
+        }
+
+        Console.WriteLine("Count : " + Hospitals.Count.ToString());
+        
+        foreach(var hospital in Hospitals)
         {
             hospital.Distance = String.Format("{0:0.00} km", distance(hospital.Latitude, hospital.Longitude));
         }
@@ -250,20 +299,20 @@
 
 
                     Tmp = new Hospital
-                    {
-                        Name = place.Name,
-                        PlaceID = place.PlaceId,
-                        Address = place.Address,
-                        Distance = String.Format("{0:0.00} km", distance(place.Latitude, place.Longitude)),
-                        EstimatedWait = String.Format("{0} hours", new Random().Next(100)),
-                        BedsOpen = "0 Avail",
-                        Status = "Unavailable",
-                        Latitude = place.Latitude,
-                        Longitude = place.Longitude,
-                        Photo = (place.Photos.Count > 0 ? place.Photos[0] : ""),
-                        Visible = false,
-                        Services = new() { "Cardiology", "Neurology" }
-                    };
+                        {
+                            Name = place.Name,
+                            PlaceID = place.PlaceId,
+                            Address = place.Address,
+                            Distance = String.Format("{0:0.00} km", distance(place.Latitude, place.Longitude)),
+                            EstimatedWait = String.Format("{0}", new Random().Next(100)),
+                            BedsOpen = "0",
+                            Status = "Unavailable",
+                            Latitude = place.Latitude,
+                            Longitude = place.Longitude,
+                            Photo = (place.Photos.Count > 0 ? place.Photos[0] : ""),
+                            Visible = false,
+                            Services = new() { "Cardiology", "Neurology" }
+                        };
                     dbContext.Hospitals.Add(Tmp);
                 }
 

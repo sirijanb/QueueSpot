@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace app.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260122213532_qsmigration2")]
+    partial class qsmigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,46 +80,6 @@ namespace app.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Hospitals");
-                });
-
-            modelBuilder.Entity("app.Models.HospitalService", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ServiceName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HospitalServices");
-                });
-
-            modelBuilder.Entity("app.Models.HospitalServiceAssignment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("HospitalId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HospitalId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("HospitalServiceAssignment");
                 });
 
             modelBuilder.Entity("app.Models.PlaceDetails", b =>
@@ -298,25 +261,6 @@ namespace app.Migrations
                     b.ToTable("UserLocation");
                 });
 
-            modelBuilder.Entity("app.Models.HospitalServiceAssignment", b =>
-                {
-                    b.HasOne("app.Models.Hospital", "Hospital")
-                        .WithMany("HospitalServices")
-                        .HasForeignKey("HospitalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("app.Models.HospitalService", "Service")
-                        .WithMany("Assignments")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Hospital");
-
-                    b.Navigation("Service");
-                });
-
             modelBuilder.Entity("app.Models.Representative", b =>
                 {
                     b.HasOne("app.Models.Hospital", "Hospital")
@@ -330,14 +274,7 @@ namespace app.Migrations
 
             modelBuilder.Entity("app.Models.Hospital", b =>
                 {
-                    b.Navigation("HospitalServices");
-
                     b.Navigation("Representatives");
-                });
-
-            modelBuilder.Entity("app.Models.HospitalService", b =>
-                {
-                    b.Navigation("Assignments");
                 });
 #pragma warning restore 612, 618
         }

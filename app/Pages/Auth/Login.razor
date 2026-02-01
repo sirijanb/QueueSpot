@@ -32,7 +32,7 @@
             </div>
         }
 
-        <button class="btn btn-primary w-100 mt-3" type="button" @onclick="OnLogin">Sign in</button>
+        <button class="btn btn-primary w-100 mt-3" type="button" @onclick="OnLogin">@SigninText</button>
     </div>
 
 </form>
@@ -45,10 +45,12 @@
     private string email = "";
     private string password = "";
     private string errorMessage = "";
+    private string SigninText = "Sign in";
     private Representative representative = new Representative();
 
     private async Task OnLogin()
     {
+        SigninText = "Please wait...";
         // ToDo : Authenticate through backend
         if (email == "admin" && password == "1234")
         {
@@ -66,9 +68,10 @@
             {
                 if (representative.Status == 0)
                 {
+                    SigninText = "Sign in";
                     errorMessage = "Your registration request is still under review. Please wait until your request is approved.";
-                }
-                else
+                    return;
+                } else
                 {
                     await Session.SetAsync("email", (object)email);
                     await Session.SetAsync("role", (object)"rep");
@@ -78,7 +81,7 @@
             }
         }
 
-
+        SigninText = "Sign in";
         errorMessage = "Invalid Email or Password!";
     }
 
