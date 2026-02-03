@@ -1,0 +1,37 @@
+﻿.mobile-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+}
+
+.mobile-toggle .btn {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 50px;
+}
+
+.main-centre-layout{
+    width:50% !important;
+}
+/* Hide toggle button on larger screens */
+@media (min-width: 992px) {
+    .mobile-toggle {
+        display: none;
+    }
+
+    
+}
+
+/* Adjust HospitalDetails for mobile */
+@media (max-width: 991px) {
+    .col-lg-8.position-absolute {
+        left: 0 !important;
+        width: 100% !important;
+    }
+
+    .main-centre-layout {
+        width: auto !important;
+    }
+}
