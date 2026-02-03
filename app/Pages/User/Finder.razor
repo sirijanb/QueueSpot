@@ -1,6 +1,8 @@
 ﻿@page "/finder"
 <PageTitle>Find Hospitals | QueueSpot</PageTitle>
-
+<HeadContent>
+    <link href="/css/main.responsive.css" rel="stylesheet" />
+</HeadContent>
 @using Microsoft.EntityFrameworkCore
 @using app.Models
 @using BlazorBootstrap
@@ -13,7 +15,7 @@
     <div class="row vh-100 overflow-hidden">
 
         <!-- LEFT PANEL -->
-        <div class="col-4 border-end p-3 vh-100 overflow-scroll">
+        <div class="col-lg-4 col-12 border-end p-3 vh-100 overflow-scroll @(showMap ? "d-none d-lg-block" : "")">
 
             <h5 class="fw-bold mb-3">Hospitals Near You</h5>
             
@@ -60,7 +62,7 @@
         </div>
 
         <!-- RIGHT PANEL -->
-        <div class="col-8 p-0">
+        <div class="col-lg-8 col-12 p-0 @(!showMap ? "d-none d-lg-block" : "")">
 
 
             <div id="map" class="h-100 d-flex align-items-center justify-content-center bg-light">
@@ -68,8 +70,8 @@
             @if (SelectedHospital is not null)
             {
 
-                <div class="col-8 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0"
-                    style="left:33.33333%; z-index:1000;">
+                <div class="col-lg-8 col-12 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0"
+                    style=" z-index:1000;">
                     <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
                 </div>
             }
@@ -77,6 +79,14 @@
         </div>
 
     </div>
+</div>
+
+<!-- Mobile Toggle Button -->
+<div class="mobile-toggle d-lg-none">
+    <button class="btn btn-primary" @onclick="ToggleView">
+        <i class="bi @(showMap ? "bi-list" : "bi-pin-map-fill")"></i>
+        @(showMap ? "List" : "Map")
+    </button>
 </div>
 
 @code {
@@ -92,6 +102,7 @@
     private double currentLat = 43.651070; // Default to Toronto
     private double currentLng = -79.347015;
     private bool mapInitialized = false;
+    private bool showMap = false;
 
     List<Hospital> Hospitals = new List<Hospital>();
     List<HospitalService> hospitalServices = new List<HospitalService>();
@@ -159,6 +170,8 @@
     void SelectHospital(Hospital hospital)
     {
         SelectedHospital = hospital;
+        showMap = true;
+
     }
 
     private async Task SearchPlaces()
@@ -236,6 +249,8 @@
     private async Task CloseHospitalDetails()
     {
         SelectedHospital = null;
+        showMap = false;
+
         //await JS.InvokeVoidAsync("placesSearch.reDrawMap", null, true);
         //await JS.InvokeVoidAsync("placesSearch.setCentre", currentLat, currentLng, 13);
 
@@ -269,7 +284,7 @@
         }
 
         Console.WriteLine("Count : " + Hospitals.Count.ToString());
-        
+
         foreach(var hospital in Hospitals)
         {
             hospital.Distance = String.Format("{0:0.00} km", distance(hospital.Latitude, hospital.Longitude));
@@ -318,15 +333,15 @@
 
                 /*existing = (from d in dbContext.Hospitals where d.PlaceID == tmp.PlaceID select new { PlaceId = d.PlaceID }).Count();
                 if (existing < 1) {
-                dbContext.Hospitals.Add(tmp);
-                }*/
+                    dbContext.Hospitals.Add(tmp);
+                    }*/
 
                 //if (Tmp.Visible == true) {
                 //Hospitals.Add(Tmp);
                 //}
 
 
-            }
+        }
 
             dbContext.SaveChanges();
         }
@@ -349,5 +364,12 @@
 
         return distance; // in kilometres
 
+    }
+
+
+    private void ToggleView()
+    {
+        SelectedHospital = null;
+        showMap = !showMap;
     }
 }
