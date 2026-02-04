@@ -18,7 +18,7 @@
 <input class="form-control" id="addressInput" value="@searchText" @oninput="OnInputChanged" @onfocus="OnFocus"
     placeholder="@Placeholder" autocomplete="off" />
 
- 
+
 @if (isLoading)
 {
     <div class="flex justify-content-center mt-2 mx-2 ">
@@ -185,20 +185,16 @@ MinCharacters)
 
         try
         {
+            // Trigger parent search immediately after selection
+            if (AddrValueChanged.HasDelegate)
+            {
+                await AddrValueChanged.InvokeAsync(searchText);
+            }
 
-            //await JS.InvokeVoidAsync("document.getElementById(\"addressInput\").change");
-            /*var placeDetails = await JS.InvokeAsync<PlaceDetails>(
-            "placesAutocomplete.getPlaceDetails",
-            prediction.Id
-            );
-
-            searchText = placeDetails.FormattedAddress;
-            Console.WriteLine("searchText : {0}", searchText);
-            AddrValue = searchText;
-
-            Console.WriteLine("AddrValue : {0}", AddrValue);
-            */
-            //await OnAddressSelected.InvokeAsync(placeDetails);
+            if (OnClick.HasDelegate)
+            {
+                await OnClick.InvokeAsync(new MouseEventArgs());
+            }
         }
         catch (Exception ex)
         {
