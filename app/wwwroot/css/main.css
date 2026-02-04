@@ -2,22 +2,39 @@
 }
 
 .close-button {
-    background:none;
-    border:none;
+  background: none;
+  border: none;
 }
 
 .tile {
-    -webkit-box-shadow: 5px 5px 15px 3px rgba(0,0,0,0.18);
-    box-shadow: 5px 5px 15px 3px rgba(0,0,0,0.18);
-    background: #fff;
-    border-radius: 7px;
-    padding:10px;
+  -webkit-box-shadow: 5px 5px 15px 3px rgba(0, 0, 0, 0.18);
+  box-shadow: 5px 5px 15px 3px rgba(0, 0, 0, 0.18);
+  background: #fff;
+  border-radius: 7px;
+  padding: 10px;
 }
 
 .hospital-details-title {
-    
 }
 
 .hospital-details .container {
-     padding:15px 0; 
+  padding: 15px 0;
+}
+.input-group .btn-primary,
+.input-group .btn-secondary {
+  height: 100%;
+  min-width: 100px;
+}
+
+.input-group .dropdown .btn {
+  height: 100%;
+}
+/* Remove border-radius for input group and dropdown in Finder */
+.input-group > .dropdown,
+.input-group > .dropdown .dropdown-toggle,
+.input-group > .dropdown .dropdown-menu,
+.input-group-lg > .form-control,
+.input-group-lg > .btn,
+.input-group-lg > .dropdown .dropdown-toggle {
+  border-radius: 0 !important;
 }
