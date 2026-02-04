@@ -2,32 +2,23 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 <style>
-    #addressInput:focus,
-    #addressInput:active {
+    .form-control:focus,
+    .form-control:active {
         outline: none !important;
         box-shadow: none !important;
-        border-color: #ced4da !important;
-    }
-
-    #addressInput:focus-visible {
-        outline: 2px solid rgba(13, 110, 253, 0.25);
-        outline-offset: 2px;
     }
 </style>
 
-<input class="form-control" id="addressInput" value="@searchText" @oninput="OnInputChanged" @onfocus="OnFocus"
-    placeholder="@Placeholder" autocomplete="off" />
-
+<input class="form-control" id="addressInput" value="@(searchText?.Split(',')[0])" @oninput="OnInputChanged"
+    @onfocus="OnFocus" placeholder="@Placeholder" autocomplete="off" />
 
 @if (isLoading)
 {
-    <div class="flex justify-content-center mt-2 mx-2 ">
+    <div class="flex justify-content-center mt-2 mx-2 border-0">
         <span class="spinner-border" role="status" aria-hidden="true"
             style="width:1.7rem; height:1.7rem; border-width:.28rem;"></span>
     </div>
 }
-
-
 
 @if (showSuggestions && predictions != null && predictions.Count > 0)
 {
@@ -53,13 +44,10 @@ MinCharacters)
     </ul>
 }
 
-
-
-<button class="btn btn-primary" type="button" @onclick="OnClick" @ondblclick="OnDbClick">
-    <i class="bi bi-search"></i><span class="d-none d-lg-inline">&nbsp;Search</span>
+<button class="btn btn-primary ms-1" type="button" @onclick="OnClick" @ondblclick="OnDbClick">
+    @* <i class="bi bi-search fs-6"></i> *@
+    <span class="d-none d-lg-inline">Search</span>
 </button>
-
-
 
 @code {
     [Parameter]
@@ -221,6 +209,7 @@ MinCharacters)
         cancellationTokenSource?.Cancel();
         cancellationTokenSource?.Dispose();
     }
+
 
 
 
