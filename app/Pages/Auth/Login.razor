@@ -52,32 +52,39 @@
     {
         SigninText = "Please wait...";
         // ToDo : Authenticate through backend
-        if (email == "admin" && password == "1234")
-        {
-            await Session.SetAsync("email", (object)email);
-            await Session.SetAsync("role", (object)"admin");
-            Nav.NavigateTo("/admin/dashboard");
-            return;
-        }
-        else
-        {
-            representative = dbContext.Representative.Where(h => h.Email == email && h.Password ==
+        representative = dbContext.Representative.Where(h => h.Email == email && h.Password ==
             password).FirstOrDefault<Representative>();
 
-            if (representative != null && representative.Id != 0)
+        if (representative != null && representative.Id != 0)
+        {
+            if (representative.Role == "admin")
             {
+                await Session.SetAsync("email", (object)email);
+                await Session.SetAsync("role", (object)representative.Role);
+                Nav.NavigateTo("/admin/dashboard");
+                return;
+            }
+            else
+            {
+                // representative = dbContext.Representative.Where(h => h.Email == email && h.Password ==
+                // password).FirstOrDefault<Representative>();
+
+                // if (representative != null && representative.Id != 0)
+                // {
                 if (representative.Status == 0)
                 {
                     SigninText = "Sign in";
                     errorMessage = "Your registration request is still under review. Please wait until your request is approved.";
                     return;
-                } else
+                }
+                else
                 {
                     await Session.SetAsync("email", (object)email);
-                    await Session.SetAsync("role", (object)"rep");
+                    await Session.SetAsync("role", (object)representative.Role);
                     Nav.NavigateTo("/admin/dashboard");
                     return;
                 }
+                // }
             }
         }
 
