@@ -1,24 +1,45 @@
 ﻿@using app.Models
 
-<div class="card mb-3 shadow-sm hospital-card"
-     role="button"
-     @onclick="() => OnSelect.InvokeAsync(Hospital)">
+<div class="card mb-3 shadow-sm hospital-card" role="button" @onclick="() => OnSelect.InvokeAsync(Hospital)">
 
     <div class="card-body">
-        <h6 class="fw-bold">@Hospital.Name</h6>
+        <h6 class="fw-bold mb-3">@Hospital.Name</h6>
 
         @if (int.Parse(Hospital.EstimatedWait) >= 60)
         {
-            EstimatedWait = String.Format("{0}:{1}", int.Parse(Hospital.EstimatedWait) / 60, int.Parse(Hospital.EstimatedWait) % 60);
-        } else
+            EstimatedWait = String.Format("{0}:{1}", int.Parse(Hospital.EstimatedWait) / 60,
+            int.Parse(Hospital.EstimatedWait) % 60);
+        }
+        else
         {
             EstimatedWait = String.Format("0:{0}", int.Parse(Hospital.EstimatedWait));
         }
 
         <div class="d-flex justify-content-between small text-muted">
-            <span>Distance<br><b>@Hospital.Distance</b></span>
-            <span>Est. Wait<br><b>@EstimatedWait</b></span>
-            <span>Beds Open<br><b>@Hospital.BedsOpen Avail</b></span>
+            <div class="d-flex flex-column align-items-center text-dark gap-2">
+                <div class="">
+                    <b>📍 Distance</b>
+                </div>
+                <div class="fs-6">
+                    @Hospital.Distance
+                </div>
+            </div>
+            <div class="d-flex flex-column align-items-center text-dark gap-2">
+                <div>
+                    <b>⏱️ Est Wait Time</b>
+                </div>
+                <div class="fs-6">
+                    @EstimatedWait Mins
+                </div>
+            </div>
+            <div class="d-flex flex-column align-items-center text-dark gap-2">
+                <div>
+                    <b>🛏️ Beds Available</b>
+                </div>
+                <div class="fs-6">
+                    @Hospital.BedsOpen Beds
+                </div>
+            </div>
         </div>
 
         <div class="mt-2">
@@ -35,5 +56,5 @@
     [Parameter] public Hospital Hospital { get; set; } = default!;
     [Parameter] public EventCallback<Hospital> OnSelect { get; set; }
 
-    
+
 }
