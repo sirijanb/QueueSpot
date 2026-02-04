@@ -2,22 +2,21 @@
 }
 
 .close-button {
-    background:none;
-    border:none;
+  background: none;
+  border: none;
 }
 
 .tile {
-    -webkit-box-shadow: 5px 5px 15px 3px rgba(0,0,0,0.18);
-    box-shadow: 5px 5px 15px 3px rgba(0,0,0,0.18);
-    background: #fff;
-    border-radius: 7px;
-    padding:10px;
+  -webkit-box-shadow: 5px 5px 15px 3px rgba(0, 0, 0, 0.18);
+  box-shadow: 5px 5px 15px 3px rgba(0, 0, 0, 0.18);
+  background: #fff;
+  border-radius: 7px;
+  padding: 10px;
 }
 
 .hospital-details-title {
-    
 }
 
 .hospital-details .container {
-     padding:15px 0; 
+  padding: 15px 0;
 }
