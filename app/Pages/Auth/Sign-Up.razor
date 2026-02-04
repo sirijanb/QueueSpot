@@ -169,6 +169,10 @@ else
             errorMessage = "Please search and choose a hospital!";
             return;
         }
+        if (representative.Hospital != null && representative.Hospital.Id != 0)
+        {
+            representative.Role = "rep";
+        }
 
         dbContext.Representative.Add(representative);
         dbContext.SaveChanges();
