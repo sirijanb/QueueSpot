@@ -2,8 +2,8 @@
 }
 
 .close-button {
-    background:none;
-    border:none;
+  background: none;
+  border: none;
 }
 
 .tile {
@@ -23,6 +23,15 @@
 }
 
 .hospital-details-title {
+}
+
+.hospital-details .container {
+  padding: 15px 0;
+}
+.input-group .btn-primary,
+.input-group .btn-secondary {
+  height: 100%;
+  min-width: 100px;
 }
 
 .hospital-details .container {

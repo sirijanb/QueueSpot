@@ -16,5 +16,7 @@
         public int Status { get; set; } = 0;
 
         public virtual Hospital Hospital { get; set; } = null!;
+
+        public string Role { get; set; }
     }
 }
