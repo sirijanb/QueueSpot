@@ -1,24 +1,45 @@
-﻿@using app.Models
+﻿@using System.Web
+@using app.Models
 
 <div class="p-4 h-100 w-100 hospital-details">
 
-    <div class="tile">
-        <div class="d-flex justify-content-between">
-            <h3 class="border-primary">
-                @Hospital.Name
-            </h3>
-            <button class="close-button fs-4" @onclick="OnCloseButtonClick">X</button>
+    <div class="hospital-details-title tile">
+        <div class="row">
+            <div class="col-2 d-none d-lg-block">
+                <img src="@(string.IsNullOrEmpty(Hospital.Photo) ? "/images/hospital_pic_example_grey.jpg" : Hospital.Photo)" class="hospital-pic rounded-circle w-100" alt="Hospital Image">
+            </div>
+            <div class="col-10 col-lg-8">
+                <h3 class="fw-bold">
+                    @Hospital.Name
+                    <span class="close-ui d-none"><button class="close-button" @onclick="OnCloseButtonClick">×</button></span>
+                </h3>
+                <span class="addr"><i class="bi bi-pin-map-fill"></i> @Hospital.Address</span><br />
+                <span class="badge bg-light text-dark mb-3">@Hospital.Status</span><br />
+                <a href="@String.Format("https://www.google.com/maps/dir/?api=1&destination={0}", HttpUtility.UrlEncode(Hospital.Address))" target="_blank" class="btn btn-primary"><i class="bi bi-cursor-fill"></i> Direction</a>
+                <button class="btn btn-outline-secondary" type="button" @onclick="OnCloseButtonClick"> Close</button>
+            </div>
         </div>
-        <div>
-            <span
-                class="badge @(Hospital.Status?.ToLower() == "unavailable" ? "bg-danger" : "bg-success") mt-2 px-3 py-2">@Hospital.Status</span>
-        </div>
+        
     </div>
 
-    <!-- Location & Distance -->
-    <div class="container mt-3">
-        <div class="row">
-            <div class="col">
+    <div class="container">
+       <div class="row">
+           <div class="col">
+               <div class="tile">
+               <p>Current ER Wait Time</p>
+                    @if (int.Parse(Hospital.EstimatedWait) >= 60)
+                    {
+                        EstimatedWait = String.Format("{0}:{1}", int.Parse(Hospital.EstimatedWait) / 60, int.Parse(Hospital.EstimatedWait) % 60);
+                    }
+                    else
+                    {
+                        EstimatedWait = String.Format("0:{0}", int.Parse(Hospital.EstimatedWait));
+                    }
+                    <b class="h3">@EstimatedWait</b>
+                </div>
+           </div>
+           @*
+            <div class="col ">
                 <div class="tile">
                     <p class="mb-2 fw-bold"><i class="bi bi-geo-alt"></i> Location</p>
                     <p class="mb-1 "><small>@Hospital.Address</small></p>
@@ -27,23 +48,13 @@
                     </button> *@
                 </div>
             </div>
-        </div>
-    </div>
+            *@
 
-    <div class="container" <div class="row">
-        <div class="col">
-            <div class="tile">
-                <p class="fw-bold">Current ER Wait</p>
-                @if (int.Parse(Hospital.EstimatedWait) >= 60)
-                {
-                    EstimatedWait = String.Format("{0}:{1}", int.Parse(Hospital.EstimatedWait) / 60,
-                    int.Parse(Hospital.EstimatedWait) % 60);
-                }
-                else
-                {
-                    EstimatedWait = String.Format("0:{0}", int.Parse(Hospital.EstimatedWait));
-                }
-                <b>@EstimatedWait Mins</b>
+            <div class="col ">
+                <div class="tile">
+                <p>Available beds</p>
+                    <b class="h3">@Hospital.BedsOpen</b> beds
+                </div>
             </div>
         </div>
 
@@ -64,17 +75,14 @@
 
     </div>
 
-    <!--<p><b>Distance:</b> @Hospital.Distance</p>-->
-</div>
-
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <div class="tile">
-                <h6 class="fw-bold">Available Services</h6>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="tile">
+                <h6 class="">Services</h6>
                 @foreach (var service in Hospital.Services)
                 {
-                    <span class="badge bg-primary me-1">@service</span>
+                        <span class="badge bg-light text-dark me-1">@service</span>
                 }
             </div>
         </div>
@@ -112,6 +120,8 @@
 
     [Parameter] public Hospital Hospital { get; set; } = default!;
     [Parameter] public EventCallback<MouseEventArgs> OnClickClose { get; set; }
+
+    
 
     private string EstimatedWait = "";
 

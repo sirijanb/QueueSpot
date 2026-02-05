@@ -7,13 +7,19 @@
 }
 
 .tile {
-  -webkit-box-shadow: 2px 2px 10px 5px rgba(165, 165, 165, 0.187);
-  box-shadow: 2px 2px 10px 5px rgba(165, 165, 165, 0.187);
-  background: #fff;
-  border-radius: 15px;
-  padding: 15px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+    -webkit-box-shadow: 0px 0px 1px 1px #CBCBCB;
+    box-shadow: 0px 0px 1px 1px #CBCBCB;
+    background: #fff;
+    border-radius: 7px;
+    padding: 20px;
+}
+
+.hospital-details .close-ui {
+    float: right;
+}
+
+.hospital-details {
+    background: #F7FAFC;
 }
 
 .hospital-details {
@@ -28,15 +34,20 @@
   min-width: 100px;
 }
 
-.input-group .dropdown .btn {
-  height: 100%;
+.hospital-details .container {
+     padding:15px 0; 
 }
-/* Remove border-radius for input group and dropdown in Finder */
-.input-group > .dropdown,
-.input-group > .dropdown .dropdown-toggle,
-.input-group > .dropdown .dropdown-menu,
-.input-group-lg > .form-control,
-.input-group-lg > .btn,
-.input-group-lg > .dropdown .dropdown-toggle {
-  border-radius: 0 !important;
+
+.hospital-details .addr {
+    color: #6A7A90;
+}
+.card-active {
+    background: #F3F8FE;
+    border-color: #197FE6;
+}
+
+.hospital-pic {
+    height: 100%;
+    max-height:142px;
+    object-fit: cover;
 }
