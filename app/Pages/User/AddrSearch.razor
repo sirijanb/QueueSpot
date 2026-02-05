@@ -140,11 +140,7 @@ MinCharacters)
             // Ignore cancellation
         }
 
-        if (AddrValueChanged.HasDelegate) // Send value update to the parent page
-        {
-            await AddrValueChanged.InvokeAsync(searchText);
-        }
-        AddrValue = searchText;
+        await UpdateAddrValue();
     }
 
     private async Task GetPredictions(string input, CancellationToken cancellationToken)
@@ -152,10 +148,10 @@ MinCharacters)
         try
         {
             var result = await JS.InvokeAsync<List<PlacePrediction>>(
-            "placesAutocomplete.getPlacePredictions",
-            cancellationToken,
-            input,
-            CountryCode
+                "placesAutocomplete.getPlacePredictions",
+                cancellationToken,
+                input,
+                CountryCode
             );
 
             predictions = result ?? new List<PlacePrediction>();
@@ -181,7 +177,9 @@ MinCharacters)
         isLoading = true;
         errorMessage = string.Empty;
         StateHasChanged();
-        AddrValue = searchText;
+        await UpdateAddrValue();
+
+
 
         try
         {
@@ -199,7 +197,7 @@ MinCharacters)
             Console.WriteLine("AddrValue : {0}", AddrValue);
             */
             //await OnAddressSelected.InvokeAsync(placeDetails);
-        }
+    }
         catch (Exception ex)
         {
             errorMessage = "Error fetching address details";
@@ -210,6 +208,17 @@ MinCharacters)
             isLoading = false;
             StateHasChanged();
         }
+    }
+
+    private async Task UpdateAddrValue()
+    {
+        if (AddrValueChanged.HasDelegate) // Send value update to the parent page
+        {
+            await AddrValueChanged.InvokeAsync(searchText);
+
+        }
+        AddrValue = searchText;
+
     }
 
     private void OnFocus()
