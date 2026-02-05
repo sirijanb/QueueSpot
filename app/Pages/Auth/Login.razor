@@ -1,15 +1,11 @@
 @page "/admin/login"
-<PageTitle>Login - QueueSpot</PageTitle>
+<PageTitle>Login | QueueSpot</PageTitle>
 @layout LoginLayout
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using app.Models
 @inject NavigationManager Nav
 @inject ProtectedSessionStorage Session
 @inject ApplicationDbContext dbContext
-
-
-<PageTitle>Login</PageTitle>
-
 
 <h1 class="mb-5">Management Login</h1>
 <form>
@@ -37,8 +33,10 @@
 
 </form>
 
-<div class="my-4">
+<div class="my-4 d-flex justify-content-between">
     <a href="/admin/sign-up">Don’t have an account? Register your hospital
+    </a>
+    <a href="/">Back to Home
     </a>
 </div>
 @code {
@@ -53,7 +51,7 @@
         SigninText = "Please wait...";
         // ToDo : Authenticate through backend
         representative = dbContext.Representative.Where(h => h.Email == email && h.Password ==
-            password).FirstOrDefault<Representative>();
+        password).FirstOrDefault<Representative>();
 
         if (representative != null && representative.Id != 0)
         {
