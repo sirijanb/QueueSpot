@@ -1,15 +1,24 @@
-﻿@using app.Models
+﻿@using System.Web
+@using app.Models
 
 <div class="p-4 h-100 w-100 hospital-details">
 
     <div class="hospital-details-title tile">
-        <h3 class="fw-bold">
-            @Hospital.Name
-            <span><button class="close-button" @onclick="OnCloseButtonClick">×</button></span>
-        </h3>
-        <span></span>
-        <span class="badge bg-success mb-3">@Hospital.Status</span>
-
+        <div class="row">
+            <div class="col-2 d-none d-lg-block">
+                <img src="@(string.IsNullOrEmpty(Hospital.Photo) ? "/images/hospital_pic_example_grey.jpg" : Hospital.Photo)" class="hospital-pic rounded-circle w-100" alt="Hospital Image">
+            </div>
+            <div class="col-10 col-lg-8">
+                <h3 class="fw-bold">
+                    @Hospital.Name
+                    <span class="close-ui d-none"><button class="close-button" @onclick="OnCloseButtonClick">×</button></span>
+                </h3>
+                <span class="addr"><i class="bi bi-pin-map-fill"></i> @Hospital.Address</span><br />
+                <span class="badge bg-light text-dark mb-3">@Hospital.Status</span><br />
+                <a href="@String.Format("https://www.google.com/maps/dir/?api=1&destination={0}", HttpUtility.UrlEncode(Hospital.Address))" target="_blank" class="btn btn-primary"><i class="bi bi-cursor-fill"></i> Direction</a>
+                <button class="btn btn-outline-secondary" type="button" @onclick="OnCloseButtonClick"> Close</button>
+            </div>
+        </div>
         
     </div>
 
@@ -26,21 +35,22 @@
                     {
                         EstimatedWait = String.Format("0:{0}", int.Parse(Hospital.EstimatedWait));
                     }
-                    <b>@EstimatedWait</b>
+                    <b class="h3">@EstimatedWait</b>
                 </div>
            </div>
-
+           @*
             <div class="col ">
                 <div class="tile">
                 <p>Occupancy Status</p>
                 <b>00%</b>
                 </div>
             </div>
+            *@
 
             <div class="col ">
                 <div class="tile">
                 <p>Available beds</p>
-                <b>@Hospital.BedsOpen</b> beds
+                    <b class="h3">@Hospital.BedsOpen</b> beds
                 </div>
             </div>
 
@@ -54,10 +64,10 @@
         <div class="row">
             <div class="col">
                 <div class="tile">
-                <h6 class="mt-4">Services</h6>
+                <h6 class="">Services</h6>
                 @foreach (var service in Hospital.Services)
                 {
-                    <span class="badge bg-primary me-1">@service</span>
+                        <span class="badge bg-light text-dark me-1">@service</span>
                 }
                 </div>
             </div>
@@ -69,6 +79,8 @@
 
     [Parameter] public Hospital Hospital { get; set; } = default!;
     [Parameter] public EventCallback<MouseEventArgs> OnClickClose { get; set; }
+
+    
 
     private string EstimatedWait = "";
 
