@@ -18,6 +18,8 @@
         public string Photo { get; set; } = "";
 
         public bool Visible { get; set; } = true;
+        public string? PhoneNumber { get; set; }
+        public string? Website { get; set; }
 
         public virtual List<Representative>? Representatives { get; set; }
         public List<string> Services { get; set; } = new();
