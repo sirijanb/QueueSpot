@@ -1,9 +1,11 @@
 ﻿@using app.Models
 
-<div class="card mb-3 shadow-sm hospital-card" role="button" @onclick="() => OnSelect.InvokeAsync(Hospital)">
+<div class="card mb-3 shadow-sm hospital-card @(Active ? "card-active" : "")"
+     role="button"
+     @onclick="() => OnSelect.InvokeAsync(Hospital)">
 
-    <div class="card-body">
-        <h6 class="fw-bold mb-3">@Hospital.Name</h6>
+    <div class="card-body ">
+        <h6 class="fw-bold">@Hospital.Name</h6>
 
         @if (int.Parse(Hospital.EstimatedWait) >= 60)
         {
@@ -53,6 +55,7 @@
 
 @code {
     private string EstimatedWait = "";
+    [Parameter] public bool Active { get; set; } = false;
     [Parameter] public Hospital Hospital { get; set; } = default!;
     [Parameter] public EventCallback<Hospital> OnSelect { get; set; }
 

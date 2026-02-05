@@ -21,31 +21,26 @@
             <div class="input-group input-group-lg mt-4 mb-2 shadow-sm">
 
                 <AddrSearch @bind-AddrValue="@DisplayQuery" OnAddressSelected="SearchPlaces" OnClick="SearchPlaces" />
-                <div class="dropdown ms-1">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        Filter
+                
+                
+            </div>
+
+            <div class="pt-1">
+
+            
+                <div class="dropdown w-100">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @hospitalFilter
                     </button>
                     <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" @onclick="() => { HospitalFilterChanged(null); }">All</a></li>
                         @foreach (var hospitalService in hospitalServices)
                         {
-                            <li><a class="dropdown-item"
-                                    @onclick="() => { HospitalFilterChanged(hospitalService); }">@hospitalService.ServiceName</a>
-                            </li>
+                            <li><a class="dropdown-item" @onclick="() => {  HospitalFilterChanged(hospitalService); }">@hospitalService.ServiceName</a></li>
                         }
 
                     </ul>
                 </div>
-                @*
-                <Dropdown  Color="DropdownColor.Secondary">
-                    <DropdownToggleButton>Filter</DropdownToggleButton>
-    <DropdownMenu>
-        @foreach(var hospitalService in hospitalServices) {
-            <DropdownItem To="@String.Format("javascript:FilterSelected(\"{0}\", \"{1}\");", hospitalService.Id, hospitalService.ServiceName)"  Type="DropdownItemType.Link" >@hospitalService.ServiceName</DropdownItem>                            
-                        }
-    </DropdownMenu>
-</Dropdown>
-*@
             </div>
 
             <small class="text-muted">
@@ -55,10 +50,17 @@
 
             <hr />
 
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
+
             <div class="">
                 @foreach (var hospital in Hospitals)
                 {
-                    <HospitalCard Hospital="hospital" OnSelect="SelectHospital" />
+                    <HospitalCard Hospital="hospital" OnSelect="SelectHospital" Active="(SelectedHospital != null && hospital.Id == SelectedHospital?.Id)" />
                 }
             </div>
 
@@ -97,7 +99,7 @@
 
     Hospital? SelectedHospital;
 
-    private string hospitalFilter = "";
+    private string hospitalFilter = "Filter";
     private int radiusKm = 30;
     private bool isSearching = false;
     private string errorMessage = string.Empty;
@@ -170,6 +172,7 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    [JSInvokable]
     void SelectHospital(Hospital hospital)
     {
         SelectedHospital = hospital;
@@ -188,6 +191,8 @@
 
         isSearching = true;
         errorMessage = string.Empty;
+        SelectedHospital = null;
+        showMap = false;
         StateHasChanged();
 
         var radius = radiusKm * 1000; // Convert to metres
@@ -238,7 +243,6 @@
 
                 errorMessage = $"Error searching places: {ex.Message}";
             }
-            DisplayQuery = errorMessage;
             places = null;
         }
         finally
@@ -259,9 +263,19 @@
 
     }
 
-    private async Task HospitalFilterChanged(HospitalService selectedHospitalService)
+    private async Task HospitalFilterChanged(HospitalService? selectedHospitalService)
     {
-        searchNearbyHospitals(selectedHospitalService);
+        if (selectedHospitalService == null)
+        {
+            hospitalFilter = "Filter";
+            searchNearbyHospitals();
+        }
+        else
+        {
+            hospitalFilter = selectedHospitalService.ServiceName;
+            searchNearbyHospitals(selectedHospitalService);
+        }
+
         await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
         Console.WriteLine("Selected : " + selectedHospitalService.ServiceName);
     }
@@ -274,11 +288,10 @@
         double minLat = currentLat - latRange, maxLat = currentLat + latRange;
         double minLng = currentLng - lngRange, maxLng = currentLng + lngRange;
         dbContext.Database.EnsureCreated();
-        if (selectedHospitalService == null)
-        {
-            Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng &&
-            h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
-        }
+        errorMessage = "";
+        if (selectedHospitalService == null) { 
+            Hospitals = dbContext.Hospitals.Where(h => (h.Latitude >= minLat && h.Latitude <= maxLat) && (h.Longitude >= minLng && h.Longitude <= maxLng) && h.Visible == true).ToList<Hospital>();
+        } 
         else
         {
 
@@ -290,6 +303,10 @@
         }
 
         Console.WriteLine("Count : " + Hospitals.Count.ToString());
+        if(Hospitals.Count == 0)
+        {
+            errorMessage = "Sorry, we couldn't find any hospitals.";
+        }
 
         foreach (var hospital in Hospitals)
         {
