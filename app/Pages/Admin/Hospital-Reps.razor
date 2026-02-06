@@ -16,12 +16,15 @@
     <div class="tile">
         <div class="tile-container">
             <div class="float-end " style="margin-bottom:10px;">
-                <TextInput @bind-Value="@searchText" Placeholder="Enter text" @onkeydown="OnSearchBarDown" />
+                <TextInput @bind-Value="@searchText" Placeholder="Enter Name" @onkeydown="OnSearchBarDown" class="" />
             </div>
             <div class="clearfix"></div>
             <RepMgmtList Representatives="representatives" />
-            <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber" style="margin-top:10px;"
-                PageChanged="OnPageChangedAsync" />
+            <div class="d-flex justify-content-center mt-2">
+
+                <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber" style="margin-top:10px;"
+                    PageChanged="OnPageChangedAsync" />
+            </div>
         </div>
     </div>
 </div>

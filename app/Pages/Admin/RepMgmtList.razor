@@ -3,22 +3,42 @@
 @inject NavigationManager Nav
 
 <Card @attributes="AllOtherAttributes">
-    <ul class="list-group list-group-flush">
-    @foreach (var rep in Representatives)
-    {
-
-
-
+    @* <ul class="list-group list-group-flush">
+        @foreach (var rep in Representatives)
+        {
             <li class="list-group-item" style="cursor:pointer;" @onclick="(e) => OnClickRep(rep.Id)">
                 <b>@rep.Firstname @rep.Lastname</b>
                 <span class="badge badge-pill badge-success">Approved</span>
                 <span>@(rep.Hospital == null ? "" : rep.Hospital.Name)</span>
-        </li>
-   
+            </li>
+        }
+    </ul> *@
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Hospital</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rep in Representatives)
+            {
+                @* <li class="list-group-item" style="cursor:pointer;" @onclick="(e) => OnClickRep(rep.Id)">
+                    <b>@rep.Firstname @rep.Lastname</b>
+                    <span class="badge badge-pill badge-success">Approved</span>
+                    <span>@(rep.Hospital == null ? "" : rep.Hospital.Name)</span>
+                </li> *@
+                <tr style="cursor:pointer;" @onclick="(e) => OnClickRep(rep.Id)">
+                    <td>@rep.Firstname</td>
+                    <td>@rep.Lastname</td>
+                    <td>@(rep.Hospital == null ? "" : rep.Hospital.Name)</td>
 
-        
-    }
-    </ul>
+                </tr>
+            }
+
+        </tbody>
+    </table>
 
 </Card>
 
@@ -32,7 +52,7 @@
 
     private void OnClickRep(int Id)
     {
-        
+
         Nav.NavigateTo("/admin/reps/edit/" + Id.ToString());
     }
 }
