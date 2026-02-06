@@ -72,7 +72,8 @@
 
             <div id="map" class="h-100 d-flex align-items-center justify-content-center bg-light">
             </div>
-            @if (SelectedHospital is not null)
+            @*
+                if (SelectedHospital is not null)
             {
 
                 <div class="col-lg-8 col-12 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0"
@@ -80,7 +81,7 @@
                     <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
                 </div>
             }
-
+            *@
         </div>
 
     </div>
@@ -93,6 +94,11 @@
         @(showMap ? "List" : "Map")
     </button>
 </div>
+
+<gmp-map center="37.42,-122.1"
+         zoom="14"
+         map-id="4504f8b37365c3d0"></gmp-map>
+
 
 @code {
     string DisplayQuery = "your location";
@@ -228,7 +234,7 @@
 
             searchNearbyHospitals();
 
-            await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
+            await JS.InvokeVoidAsync("placesSearch.addDetailedMarkers", Hospitals, true);
 
         }
         catch (Exception ex)
