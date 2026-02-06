@@ -20,13 +20,15 @@
         <div class="tile-container">
 
             <div class="float-end " style="margin-bottom:10px;">
-                <TextInput @bind-Value="@searchText" Placeholder="Enter text" @onkeyup="OnSearchBarDown" />
+                <TextInput @bind-Value="@searchText" Placeholder="Enter Hospital Name" @onkeyup="OnSearchBarDown" />
             </div>
             <div class="clearfix"></div>
             <HospitalMgmtList Hospitals="hospitals"></HospitalMgmtList>
 
-            <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber"
-                PageChanged="OnPageChangedAsync" />
+            <div class=" mt-4 d-flex justify-content-center align-items-center">
+                <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber"
+                    PageChanged="OnPageChangedAsync" />
+            </div>
         </div>
     </div>
 </div>
