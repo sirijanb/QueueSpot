@@ -41,8 +41,11 @@
            @*
             <div class="col ">
                 <div class="tile">
-                <p>Occupancy Status</p>
-                <b>00%</b>
+                    <p class="mb-2 fw-bold"><i class="bi bi-geo-alt"></i> Location</p>
+                    <p class="mb-1 "><small>@Hospital.Address</small></p>
+                    @* <button class="btn btn-sm btn-outline-primary mt-2" @onclick="OpenDirections">
+                        <i class="bi bi-navigation"></i> Get Directions
+                    </button> *@
                 </div>
             </div>
             *@
@@ -53,11 +56,23 @@
                     <b class="h3">@Hospital.BedsOpen</b> beds
                 </div>
             </div>
-
-    
         </div>
 
-        <!--<p><b>Distance:</b> @Hospital.Distance</p>-->
+        <div class="col ">
+            <div class="tile">
+                <p class="fw-bold">Occupancy Status</p>
+                <b>0%</b>
+            </div>
+        </div>
+
+        <div class="col ">
+            <div class="tile">
+                <p class="fw-bold">Available beds</p>
+                <b>@Hospital.BedsOpen</b> beds
+            </div>
+        </div>
+
+
     </div>
 
     <div class="container">
@@ -69,13 +84,39 @@
                 {
                         <span class="badge bg-light text-dark me-1">@service</span>
                 }
-                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Phone & Website -->
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-6">
+            <div class="tile">
+                <h6 class="mb-2"><i class="bi bi-telephone"></i> Contact</h6>
+                <p class="mb-0"><small>@(string.IsNullOrEmpty(Hospital.PhoneNumber) ? "N/A" :
+                                                Hospital.PhoneNumber)</small></p>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="tile">
+                <h6 class="mb-2"><i class="bi bi-globe"></i> Website</h6>
+                <p class="mb-0"><small>@(string.IsNullOrEmpty(Hospital.Website) ? "N/A" : Hospital.Website)</small></p>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Call Now Button -->
+@* <div class="container mt-4">
+    <button class="btn btn-success w-100">
+        <i class="bi bi-telephone-fill"></i> Call Hospital
+    </button>
+</div> *@
+</div>
+
 @code {
+    @inject IJSRuntime JS
 
     [Parameter] public Hospital Hospital { get; set; } = default!;
     [Parameter] public EventCallback<MouseEventArgs> OnClickClose { get; set; }
@@ -88,4 +129,17 @@
     {
         return OnClickClose.InvokeAsync(args);
     }
+
+
+
+
+    private async Task OpenDirections()
+    {
+        if (Hospital != null && !string.IsNullOrEmpty(Hospital.Address))
+        {
+            string mapsUrl = $"https://www.google.com/maps/search/{Uri.EscapeDataString(Hospital.Address)}";
+            await JS.InvokeVoidAsync("open", mapsUrl, "_blank");
+        }
+    }
+
 }
