@@ -59,7 +59,7 @@
             {
                 await Session.SetAsync("email", (object)email);
                 await Session.SetAsync("role", (object)representative.Role);
-                Nav.NavigateTo("/admin/dashboard");
+                Nav.NavigateTo("/admin/hospitals");
                 return;
             }
             else
@@ -79,7 +79,7 @@
                 {
                     await Session.SetAsync("email", (object)email);
                     await Session.SetAsync("role", (object)representative.Role);
-                    Nav.NavigateTo("/admin/dashboard");
+                    Nav.NavigateTo("/admin/hospitals");
                     return;
                 }
                 // }

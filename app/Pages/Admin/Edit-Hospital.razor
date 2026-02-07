@@ -26,14 +26,16 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Hospital Name</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.Name" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.Name"
+                                   placeholder="Input box" />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
                             <label>Address</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.Address" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.Address"
+                                   placeholder="Input box" />
                         </div>
                     </div>
                 </div>
@@ -42,14 +44,16 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Beds Available</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen"
+                                   placeholder="Input box" />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
                             <label>Status</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.Status" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.Status"
+                                   placeholder="Input box" />
                         </div>
                     </div>
                 </div>
@@ -61,51 +65,53 @@
                         <div class="mb-3">
                             <label>Services</label>
 
-                            <AutoComplete @bind-Value="serviceValue"
-                                          TItem="HospitalService"
-                                          DataProvider="HospitalServiceProvider"
-                                          PropertyName="ServiceName"
-                                          Placeholder="Services to add... "
-                                          class="form-control w-100"
+                            <AutoComplete @bind-Value="serviceValue" TItem="HospitalService"
+                                          DataProvider="HospitalServiceProvider" PropertyName="ServiceName"
+                                          Placeholder="Services to add... " class="form-control w-100"
                                           OnChanged="(HospitalService h) => OnAutoCompleteChanged(h)" />
 
 
                             @foreach (var assignment in assignments)
                             {
-                                <Button Color="ButtonColor.Primary" @onclick="() => { OnClickRemoveService(assignment); }" Size="ButtonSize.Large">@assignment.Service.ServiceName <i class="bi bi-x-lg"></i></Button>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col">
-                        <div class="mb-3">
-                            <label>Visible</label>
-                            <Switch Class="mt-2" @bind-Value="hospital.Visible" />
+                                <Button Color="ButtonColor.Primary" @onclick="() => { OnClickRemoveService(assignment); }"
+                                        Size="ButtonSize.Large">@assignment.Service.ServiceName <i
+                                    class="bi bi-x-lg"></i></Button>
+                                }
+                            </div>
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3">
+                                <label>Visible</label>
+                                <Switch Class="mt-2" @bind-Value="hospital.Visible" />
+                            </div>
+                        </div>
 
 
-                </div>
 
-                
-            </form>
+                    </div>
+
+
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="fixed-bottom bg-white shadow-sm ">
-    <div class="p-5">
-        <span class="float-end"><button class="btn btn-primary" type="button" @onclick="OnClickSave">Save</button></span> 
-        <span class="float-end"><button class="btn btn-light" type="button" @onclick="OnClickCancel">Cancel</button></span> 
-        @if (HospitalID != 0)
-        {
-            <span class="float-end"><button class="btn btn-danger" @onclick="ShowDialogAsync" type="button">Delete</button></span>
-        }
-    </div>
-</div>
+    <div class="fixed-bottom bg-white shadow-sm ">
+        <div class="p-5">
+            <span class="float-end"><button class="btn btn-primary" type="button"
+                                                @onclick="OnClickSave">Save</button></span>
+                <span class="float-end"><button class="btn btn-light mx-2" type="button"
+                                                    @onclick="OnClickCancel">Cancel</button></span>
+                    @if (HospitalID != 0)
+                    {
+                        <span class="float-end"><button class="btn btn-danger" @onclick="ShowDialogAsync"
+                                                            type="button">Delete</button></span>
+                        }
+                    </div>
+                </div>
 
 @code {
     private ConfirmDialog dialog = default!;
@@ -127,7 +133,8 @@
         if (firstRender)
         {
             services = dbContext.HospitalServices.OrderBy(h => h.ServiceName).ToList();
-            services.ForEach((element) =>{
+            services.ForEach((element) =>
+            {
                 serviceDctionary.Add(element.Id, element.ServiceName);
             });
             //hospitals = dbContext.Hospitals.OrderBy(h => h.Name).ToList();
@@ -138,13 +145,13 @@
     {
         Console.WriteLine(HospitalID);
 
-        if(HospitalID != 0)
+        if (HospitalID != 0)
         {
             hospital = dbContext.Hospitals.Where(h => h.Id == HospitalID).SingleOrDefault<Hospital>();
 
-            if(!string.IsNullOrEmpty(hospital.Photo))
+            if (!string.IsNullOrEmpty(hospital.Photo))
             {
-                HospitalImage = hospital.Photo; 
+                HospitalImage = hospital.Photo;
             }
 
             assignments = dbContext.HospitalServiceAssignment.Where(h => h.Hospital == hospital).Include("Service").ToList();
@@ -183,7 +190,7 @@
     private async Task ShowDialogAsync()
     {
         var options = new ConfirmDialogOptions { IsScrollable = true, IsVerticallyCentered = true };
-        var confirmation = await dialog.ShowAsync( "Are you sure?", "Are you sure to delete?",options);
+        var confirmation = await dialog.ShowAsync("Are you sure?", "Are you sure to delete?", options);
 
         if (confirmation)
         {
@@ -206,17 +213,19 @@
             dbContext.HospitalServiceAssignment.Remove(assignmentToBeRemoved);
         }
 
-        foreach (var assignment in assignments) {
+        foreach (var assignment in assignments)
+        {
 
-            if(assignment.Id == 0)
+            if (assignment.Id == 0)
             {
                 dbContext.HospitalServiceAssignment.Add(assignment);
-            } else
+            }
+            else
             {
                 dbContext.HospitalServiceAssignment.Update(assignment);
             }
 
-            
+
             deseralizedList.Add(assignment.Service.ServiceName);
         }
 
@@ -225,7 +234,8 @@
 
     }
 
-    private async Task<AutoCompleteDataProviderResult<HospitalService>> HospitalServiceProvider(AutoCompleteDataProviderRequest<HospitalService> request)
+    private async Task<AutoCompleteDataProviderResult<HospitalService>>
+HospitalServiceProvider(AutoCompleteDataProviderRequest<HospitalService> request)
     {
 
         return await Task.FromResult(request.ApplyTo(services.OrderBy(h => h.ServiceName)));
