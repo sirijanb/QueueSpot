@@ -35,8 +35,8 @@
         <div class="mb-3">
             <label>Hospital</label>
             <AutoComplete @bind-Value="hospitalName" TItem="Hospital" DataProvider="HospitalDataProvider"
-                PropertyName="Name" Placeholder="e.g. Toronto General Hospital" class="form-control w-100"
-                OnChanged="(Hospital h) => OnAutoCompleteChanged(h)" />
+                          PropertyName="Name" Placeholder="e.g. Toronto General Hospital" class="form-control w-100"
+                          OnChanged="(Hospital h) => OnAutoCompleteChanged(h)" />
         </div>
         <div class="mb-3">
             <label>Employee ID</label>
@@ -173,6 +173,8 @@ else
         {
             representative.Role = "rep";
         }
+
+        representative.Status = 0;
 
         dbContext.Representative.Add(representative);
         dbContext.SaveChanges();

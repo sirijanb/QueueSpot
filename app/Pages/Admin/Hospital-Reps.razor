@@ -10,30 +10,52 @@
 @inject ApplicationDbContext dbContext
 @inject ProtectedSessionStorage Session
 
-<h1>Hospital Representatives</h1>
+<h1 class="ms-5">Hospital Representatives</h1>
 
 <div class="admin-container">
     <div class="tile">
         <div class="tile-container">
-            <div class="float-end " style="margin-bottom:10px;">
-                <TextInput @bind-Value="@searchText" Placeholder="Enter Name" @onkeydown="OnSearchBarDown" class="" />
-            </div>
-            <div class="clearfix"></div>
-            <RepMgmtList Representatives="representatives" />
-            <div class="d-flex justify-content-center mt-2">
+            <div class="d-flex justify-content-end align-items-center gap-2" style="margin-bottom:10px;">
+                <div style="min-width: 240px;">
+                    <TextInput @bind-Value="@searchText" Placeholder="Enter Name" @onkeydown="OnSearchBarDown"
+                               class="form-control" />
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        @sortLabel
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><button class="dropdown-item" type="button"
+                                        @onclick="() => OnSortChanged(SortOption.FirstName)">First Name A–Z</button></li>
+                            <li><button class="dropdown-item" type="button"
+                                            @onclick="() => OnSortChanged(SortOption.LastName)">Last Name A–Z</button></li>
+                                <li><button class="dropdown-item" type="button"
+                                                @onclick="() => OnSortChanged(SortOption.Email)">Email A–Z</button></li>
+                                    <li><button class="dropdown-item" type="button"
+                                                    @onclick="() => OnSortChanged(SortOption.Newest)">Newest First</button></li>
+                                        <li><button class="dropdown-item" type="button"
+                                                        @onclick="() => OnSortChanged(SortOption.Oldest)">Oldest First</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <RepMgmtList Representatives="representatives" />
+                                <div class="d-flex justify-content-center mt-5">
 
-                <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber" style="margin-top:10px;"
-                    PageChanged="OnPageChangedAsync" />
-            </div>
-        </div>
-    </div>
-</div>
+                                    <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber"
+                                                PageChanged="OnPageChangedAsync" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 @code {
     int ActivePageNumber = 1;
     int TotalPages = 1;
     string searchText = "";
     List<Representative> representatives = new List<Representative>();
+    SortOption sortOption = SortOption.Newest;
+    string sortLabel = "Newest first";
 
     protected override void OnInitialized()
     {
@@ -44,8 +66,11 @@
 
     private void UpdatePages()
     {
-        int TotalArticles = dbContext.Representative.Where(h => EF.Functions.Like(h.Firstname,
-        $"%{searchText}%")).Count<Representative>();
+        int TotalArticles = dbContext.Representative
+            .Where(h => EF.Functions.Like(h.Firstname, $"%{searchText}%")
+                     || EF.Functions.Like(h.Lastname, $"%{searchText}%")
+                     || EF.Functions.Like(h.Email, $"%{searchText}%"))
+            .Count<Representative>();
         TotalPages = (int)Math.Ceiling((double)TotalArticles / 10.0);
     }
 
@@ -69,22 +94,58 @@
         LoadPage(ActivePageNumber);
     }
 
+    private void OnSortChanged(SortOption option)
+    {
+        sortOption = option;
+        sortLabel = option switch
+        {
+            SortOption.FirstName => "First name A–Z",
+            SortOption.LastName => "Last name A–Z",
+            SortOption.Email => "Email A–Z",
+            SortOption.Oldest => "Oldest first",
+            _ => "Newest first"
+        };
+
+        LoadPage(ActivePageNumber);
+    }
+
     private void LoadPage(int page)
     {
         representatives.Clear();
-        representatives = dbContext.Representative
-        .Where(h => EF.Functions.Like(h.Firstname, $"%{searchText}%"))
-        .Include<Representative>("Hospital")
-        .OrderBy(h => h.Id)
-        .Skip((page - 1) * 10)
-        .Take(10)
-        .ToList();
+        var query = dbContext.Representative
+            .Where(h => EF.Functions.Like(h.Firstname, $"%{searchText}%")
+                     || EF.Functions.Like(h.Lastname, $"%{searchText}%")
+                     || EF.Functions.Like(h.Email, $"%{searchText}%"))
+            .Include<Representative>("Hospital");
+
+        query = sortOption switch
+        {
+            SortOption.FirstName => query.OrderBy(h => h.Firstname),
+            SortOption.LastName => query.OrderBy(h => h.Lastname),
+            SortOption.Email => query.OrderBy(h => h.Email),
+            SortOption.Oldest => query.OrderBy(h => h.Id),
+            _ => query.OrderByDescending(h => h.Id)
+        };
+
+        representatives = query
+            .Skip((page - 1) * 10)
+            .Take(10)
+            .ToList();
 
     }
 
     private void RegisterNewRep()
     {
         Nav.NavigateTo("/admin/reps/edit");
+    }
+
+    private enum SortOption
+    {
+        Newest,
+        Oldest,
+        FirstName,
+        LastName,
+        Email
     }
 
 }
