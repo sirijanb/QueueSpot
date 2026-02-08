@@ -29,16 +29,28 @@
                <p>Current ER Wait Time</p>
                     @if (int.Parse(Hospital.EstimatedWait) >= 60)
                     {
-                        EstimatedWait = String.Format("{0}:{1}", int.Parse(Hospital.EstimatedWait) / 60, int.Parse(Hospital.EstimatedWait) % 60);
+                        EstimatedWait = String.Format("{0}h {1}m", int.Parse(Hospital.EstimatedWait) / 60, int.Parse(Hospital.EstimatedWait) % 60);
                     }
                     else
                     {
-                        EstimatedWait = String.Format("0:{0}", int.Parse(Hospital.EstimatedWait));
+                        EstimatedWait = String.Format("{0}m", int.Parse(Hospital.EstimatedWait));
                     }
                     <b class="h3">@EstimatedWait</b>
                 </div>
            </div>
-           <div class="col ">
+           
+            @*<div class="col ">
+                <div class="tile">
+                    <p class="mb-2 fw-bold"><i class="bi bi-geo-alt"></i> Location</p>
+                    <p class="mb-1 "><small>@Hospital.Address</small></p>
+                     <button class="btn btn-sm btn-outline-primary mt-2" @onclick="OpenDirections">
+                        <i class="bi bi-navigation"></i> Get Directions
+                    </button> 
+                </div>
+            </div>
+            *@
+
+            <div class="col ">
                 <div class="tile">
                 <p>Available beds</p>
                     <b class="h3">@Hospital.BedsOpen</b> beds

@@ -25,7 +25,7 @@
                 
             </div>
 
-            <div class="pt-1">
+            <div class="pt-1 d-none">
 
             
                 <div class="dropdown w-100">
@@ -60,7 +60,7 @@
             <div class="">
                 @foreach (var hospital in Hospitals)
                 {
-                    <HospitalCard Hospital="hospital" OnSelect="SelectHospital" Active="(SelectedHospital != null && hospital.Id == SelectedHospital?.Id)" />
+                    <HospitalCard Hospital="hospital" OnSelect="SelectHospital" OnClickMapView="OnMapViewHospital" Active="(SelectedHospital != null && hospital.Id == SelectedHospital?.Id)" />
                 }
             </div>
 
@@ -72,7 +72,8 @@
 
             <div id="map" class="h-100 d-flex align-items-center justify-content-center bg-light">
             </div>
-            @if (SelectedHospital is not null)
+            @*
+                if (SelectedHospital is not null)
             {
 
                 <div class="col-lg-8 col-12 position-absolute vh-100 d-flex bg-white top-0 right-0 bottom-0"
@@ -80,7 +81,7 @@
                     <HospitalDetails OnClickClose="CloseHospitalDetails" Hospital="SelectedHospital" />
                 </div>
             }
-
+            *@
         </div>
 
     </div>
@@ -93,6 +94,11 @@
         @(showMap ? "List" : "Map")
     </button>
 </div>
+
+<gmp-map center="37.42,-122.1"
+         zoom="14"
+         map-id="4504f8b37365c3d0"></gmp-map>
+
 
 @code {
     string DisplayQuery = "your location";
@@ -176,7 +182,7 @@
     void SelectHospital(Hospital hospital)
     {
         SelectedHospital = hospital;
-        showMap = true;
+        //showMap = true;
 
     }
 
@@ -228,7 +234,7 @@
 
             searchNearbyHospitals();
 
-            await JS.InvokeVoidAsync("placesSearch.addHospitalMarkers", Hospitals, true);
+            await JS.InvokeVoidAsync("placesSearch.addDetailedMarkers", Hospitals, true);
 
         }
         catch (Exception ex)
@@ -356,21 +362,28 @@
 
                 /*existing = (from d in dbContext.Hospitals where d.PlaceID == tmp.PlaceID select new { PlaceId = d.PlaceID }).Count();
                 if (existing < 1) {
-                dbContext.Hospitals.Add(tmp);
-                }*/
+                    dbContext.Hospitals.Add(tmp);
+                    }*/
 
                 //if (Tmp.Visible == true) {
                 //Hospitals.Add(Tmp);
                 //}
 
 
-            }
+    }
 
             dbContext.SaveChanges();
         }
 
 
     }
+
+    private async Task OnMapViewHospital(Hospital hospital)
+    {
+        showMap = true;
+        await JS.InvokeVoidAsync("placesSearch.setCentre", hospital.Latitude, hospital.Longitude, 13);
+
+    } 
 
     private double distance(double targetLat, double targetLng)
     {

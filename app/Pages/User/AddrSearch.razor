@@ -9,7 +9,7 @@
     }
 </style>
 
-<input class="form-control" id="addressInput" value="@(searchText?.Split(',')[0])" @oninput="OnInputChanged"
+<input class="form-control" id="addressInput" value="@searchText" @oninput="OnInputChanged"
     @onfocus="OnFocus" placeholder="@Placeholder" autocomplete="off" />
 
 @if (isLoading)
@@ -45,8 +45,8 @@ MinCharacters)
 }
 
 <button class="btn btn-primary ms-1" type="button" @onclick="OnClick" @ondblclick="OnDbClick">
-    @* <i class="bi bi-search fs-6"></i> *@
-    <span class="d-none d-lg-inline">Search</span>
+    
+    <i class="bi bi-search fs-6"></i><span class="d-none d-lg-inline">Search</span>
 </button>
 
 @code {

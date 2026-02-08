@@ -1,20 +1,24 @@
-﻿@using app.Models
+﻿@using System.Web
+@using app.Models
+@inject IJSRuntime JS
 
 <div class="card mb-3 shadow-sm hospital-card @(Active ? "card-active" : "")"
      role="button"
+     id="@(string.Format("hospital_card_{0}",Hospital.PlaceID))"
      @onclick="() => OnSelect.InvokeAsync(Hospital)">
 
     <div class="card-body ">
-        <h6 class="fw-bold">@Hospital.Name</h6>
+        <span class="badge bg-light text-dark mb-3">@Hospital.Status</span><br />
+        <h6 class="fw-bold h5">@Hospital.Name</h6>
 
         @if (int.Parse(Hospital.EstimatedWait) >= 60)
         {
-            EstimatedWait = String.Format("{0}:{1}", int.Parse(Hospital.EstimatedWait) / 60,
+            EstimatedWait = String.Format("{0}h {1}m", int.Parse(Hospital.EstimatedWait) / 60,
             int.Parse(Hospital.EstimatedWait) % 60);
         }
         else
         {
-            EstimatedWait = String.Format("0:{0}", int.Parse(Hospital.EstimatedWait));
+            EstimatedWait = String.Format("{0}m", int.Parse(Hospital.EstimatedWait));
         }
 
         <div class="d-flex justify-content-between small text-muted">
@@ -31,7 +35,7 @@
                     <b>⏱️ Est Wait Time</b>
                 </div>
                 <div class="fs-6">
-                    @EstimatedWait Mins
+                    @EstimatedWait
                 </div>
             </div>
             <div class="d-flex flex-column align-items-center text-dark gap-2">
@@ -44,20 +48,62 @@
             </div>
         </div>
 
-        <div class="mt-2">
-            @foreach (var service in Hospital.Services)
-            {
-                <span class="badge bg-light text-dark me-1">@service</span>
-            }
+
+        
+        <div class="row pt-2">
+            <div class="col">
+                <a href="@String.Format("https://www.google.com/maps/dir/?api=1&destination={0}", HttpUtility.UrlEncode(Hospital.Address))" class="btn btn-outline-primary w-100" target="_blank">Direction</a>
+            </div>
+            
+            <div class="col">
+                <button type="button" class="btn btn-outline-primary w-100" @onclick="() => OnClickMapView.InvokeAsync(Hospital)">Map view</button>
+            </div>
+
+            <div class="col">
+                <button type="button" class="btn btn-outline-primary w-100" @onclick="OpenHospitalDetail">Information</button>
+            </div>
+        </div>
+
+        <div class="hospital-detail-info pt-2 @(showDetail ? "" : "d-none")">
+            <p>
+                <span class="addr"><i class="bi bi-pin-map-fill"></i> @Hospital.Address</span><br />
+                <span class="services">
+                    <i class="bi bi-clipboard-heart"></i> 
+                    @foreach (var service in Hospital.Services)
+                    {
+                        <span class="badge bg-light text-dark me-1">@service</span>
+                    }
+                </span><br />
+                <span class="contact"><i class="bi bi-telephone-fill"></i> 416-000-0000</span><br />
+            </p>
+
+            
+
         </div>
     </div>
 </div>
 
 @code {
-    private string EstimatedWait = "";
     [Parameter] public bool Active { get; set; } = false;
     [Parameter] public Hospital Hospital { get; set; } = default!;
     [Parameter] public EventCallback<Hospital> OnSelect { get; set; }
+    [Parameter] public EventCallback<Hospital> OnClickMapView { get; set; }
 
+    private string EstimatedWait = "";
+    private bool showDetail = false;
 
+    private async Task OpenHospitalDetail()
+    {
+        showDetail = !showDetail;
+    }
+
+    private async Task OpenHospitalDirection()
+    {
+
+    }
+
+    private async Task HospitalViewOnTheMap()
+    {
+        
+    }
 }
