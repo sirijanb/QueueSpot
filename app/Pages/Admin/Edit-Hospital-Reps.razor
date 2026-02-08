@@ -80,15 +80,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="mb-3">
-                            <label>Approval</label>
-                            <Switch Class="mt-2" @bind-Value="approval" />
-                        </div>
-                    </div>
-
-                </div>
                 <div class="p-5">
                     <span class="float-end"><button class="btn btn-success" style="width: 100px;" type="button"
                                                         @onclick="OnClickSave">Save</button></span>
@@ -110,7 +101,6 @@
     public int HospitalRepID { get; set; }
     private ConfirmDialog dialog = default!;
     private Representative representative = new Representative();
-    private bool approval = false;
     private string hospitalName = "";
     private List<Hospital> hospitals = new List<Hospital>();
 
