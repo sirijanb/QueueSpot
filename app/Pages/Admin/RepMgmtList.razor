@@ -40,7 +40,7 @@
                     <td>
                         <div class="form-check form-switch" @onclick:stopPropagation="true">
                             <input class="form-check-input" type="checkbox" role="switch" checked="@(rep.Status == 1)"
-                                   @onchange="(e) => OnApprovalChanged(rep, e)" />
+                                   style="cursor: pointer;"                       @onchange="(e) => OnApprovalChanged(rep, e)" />
                         </div>
                     </td>
                 </tr>

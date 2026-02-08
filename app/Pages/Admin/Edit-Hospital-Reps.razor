@@ -120,14 +120,12 @@
         {
             representative = dbContext.Representative.Where(h => h.Id ==
             HospitalRepID).Include<Representative>("Hospital").First<Representative>();
-            approval = representative.Status == 1;
             hospitalName = representative.Hospital.Name;
         }
     }
 
     private async Task OnClickSave()
     {
-        representative.Status = (approval ? 1 : 0);
         if (HospitalRepID == 0)
         {
             dbContext.Representative.Add(representative);

@@ -27,22 +27,22 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><button class="dropdown-item" type="button"
-                                        @onclick="() => OnSortChanged(SortOption.FirstName)">First name A–Z</button></li>
+                                        @onclick="() => OnSortChanged(SortOption.FirstName)">First Name A–Z</button></li>
                             <li><button class="dropdown-item" type="button"
-                                            @onclick="() => OnSortChanged(SortOption.LastName)">Last name A–Z</button></li>
+                                            @onclick="() => OnSortChanged(SortOption.LastName)">Last Name A–Z</button></li>
                                 <li><button class="dropdown-item" type="button"
                                                 @onclick="() => OnSortChanged(SortOption.Email)">Email A–Z</button></li>
                                     <li><button class="dropdown-item" type="button"
-                                                    @onclick="() => OnSortChanged(SortOption.Newest)">Newest first</button></li>
+                                                    @onclick="() => OnSortChanged(SortOption.Newest)">Newest First</button></li>
                                         <li><button class="dropdown-item" type="button"
-                                                        @onclick="() => OnSortChanged(SortOption.Oldest)">Oldest first</button></li>
+                                                        @onclick="() => OnSortChanged(SortOption.Oldest)">Oldest First</button></li>
                                         </ul>
                                     </div>
                                 </div>
                                 <RepMgmtList Representatives="representatives" />
-                                <div class="d-flex justify-content-center mt-2">
+                                <div class="d-flex justify-content-center mt-5">
 
-                                    <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber" style="margin-top:10px;"
+                                    <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber"
                                                 PageChanged="OnPageChangedAsync" />
                                 </div>
                             </div>
