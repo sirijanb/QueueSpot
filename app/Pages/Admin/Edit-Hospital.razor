@@ -16,50 +16,44 @@
     <div class="tile">
         <div class="tile-container">
             <form class="w-80">
-                <div class="row mb-1">
+                <div class="row mb-4">
                     <div class="col-1">
                         <img src="@HospitalImage" class="rounded-circle w-100" alt="Hospital Image">
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
-                            <label>Hospital Name</label>
+                            <label>Hospital Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control w-100" @bind-value="hospital.Name"
-                                   placeholder="Input box" />
+                                   placeholder="Enter Hospital Name" required />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
-                            <label>Address</label>
+                            <label>Address<span class="text-danger">*</span></label>
                             <input type="text" class="form-control w-100" @bind-value="hospital.Address"
-                                   placeholder="Input box" />
+                                   placeholder="Enter Address" required />
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
-                            <label>Beds Available</label>
+                            <label>Beds Available <span class="text-danger">*</span></label>
                             <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen"
-                                   placeholder="Input box" />
+                                   placeholder="Enter Beds Available" required />
                         </div>
                     </div>
-
                     <div class="col">
                         <div class="mb-3">
-                            <label>Status</label>
+                            <label>Status<span class="text-danger">*</span></label>
                             <input type="text" class="form-control w-100" @bind-value="hospital.Status"
-                                   placeholder="Input box" />
+                                   placeholder="Enter Status" required />
                         </div>
                     </div>
                 </div>
-
-
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
@@ -80,7 +74,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col">
                             <div class="mb-3">
@@ -88,28 +81,22 @@
                                 <Switch Class="mt-2" @bind-Value="hospital.Visible" />
                             </div>
                         </div>
-
-
-
                     </div>
-
-
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="fixed-bottom bg-white shadow-sm ">
-        <div class="p-5">
-            <span class="float-end"><button class="btn btn-primary" type="button"
-                                                @onclick="OnClickSave">Save</button></span>
-                <span class="float-end"><button class="btn btn-light mx-2" type="button"
-                                                    @onclick="OnClickCancel">Cancel</button></span>
-                    @if (HospitalID != 0)
-                    {
-                        <span class="float-end"><button class="btn btn-danger" @onclick="ShowDialogAsync"
-                                                            type="button">Delete</button></span>
-                        }
+                    <div>
+                        <div class="p-5">
+                            <span class="float-end"><button class="btn btn-success" style="width: 100px;" type="button"
+                                                                @onclick="OnClickSave">Save</button></span>
+                                <span class="float-end"><button class="btn btn-light mx-2" style="width: 100px;" type="button"
+                                                                    @onclick="OnClickCancel">Cancel</button></span>
+                                    @if (HospitalID != 0)
+                                    {
+                                        <span class="float-end"><button class="btn btn-danger" @onclick="ShowDialogAsync"
+                                                                            type="button">Delete</button></span>
+                                        }
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
