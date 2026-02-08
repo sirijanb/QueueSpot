@@ -83,7 +83,7 @@
             if (locationPermissionStatus == "denied")
             {
                 locateFailed = true;
-                currentLocationString = "Failed to locate";
+                currentLocationString = "Failed to locate : Permission denied";
                 Console.WriteLine("Error: Location access is blocked.");
                 //errorMessage = "Location access is blocked. Please enable it in your browser settings.";
             }
@@ -108,7 +108,7 @@
         catch (Exception ex)
         {
             locateFailed = true;
-            currentLocationString = "Failed to locate";
+            currentLocationString = "Failed to locate :  " + ex.Message;
             //errorMessage = "Error fetching address details";
             Console.WriteLine($"Error: {ex.Message}");
         }

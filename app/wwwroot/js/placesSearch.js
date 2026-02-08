@@ -268,6 +268,83 @@
     }
   },
 
+    addDetailedMarkers: function (hospitals, centerMap) {
+        this.clearMarkers();
+
+        if (!hospitals || hospitals.length === 0) return;
+
+        const bounds = new google.maps.LatLngBounds();
+
+        hospitals.forEach((hospital, index) => {
+            const position = { lat: hospital.latitude, lng: hospital.longitude };
+            let waitTime = `${hospital.estimatedWait}m`;
+
+            console.log(hospital);
+
+            if (hospital.EstimatedWait >= 60) {
+                waitTime = `${(hospital.estimatedWait / 60)}h ${hospital.estimatedWait % 60}m`;
+            }
+            // Create custom HTML marker
+            const markerDiv = document.createElement('div');
+            markerDiv.className = 'custom-hospital-marker';
+            markerDiv.id = "hospital_marker_" + hospital.placeId;
+            markerDiv.innerHTML = `
+                <div class="marker-content">
+                    <div class="marker-layout">
+                        <div class="marker-container">
+                          <p><b>${hospital.name}</b></p>
+                          <p><span>${waitTime}</span></p>
+                          </div>
+                    </div>
+                    <div class="marker-icon">
+                        
+                      
+                    </div>
+                    <div class="marker-label">${index + 1}</div>
+                </div>
+            `;
+
+            // Create advanced marker with HTML content
+            const marker = new google.maps.marker.AdvancedMarkerElement({
+                map: this.map,
+                position: position,
+                content: markerDiv,
+                title: hospital.name
+            });
+
+            // Add click listener for info window
+            const contentString = this.createInfoWindowContent(hospital, index);
+            marker.addEventListener('click', (evt) => {
+                //this.onClickMarker(hospital);
+                console.log(hospital);
+                console.log("hospital_card_" + hospital.placeID);
+                this.setCentre(hospital.latitude, hospital.longitude);
+                document.querySelector("#hospital_card_" + hospital.placeID).click();
+                document.querySelector("#hospital_card_" + hospital.placeID).scrollIntoView();
+            });
+            /*markerDiv.addEventListener('click', () => {
+                this.infoWindow.setContent(contentString);
+                this.infoWindow.open(this.map, marker);
+                
+            });*/
+
+            this.markers.push(marker);
+            bounds.extend(position);
+        });
+
+        if (centerMap && hospitals.length > 0) {
+            this.map.fitBounds(bounds);
+        }
+    },
+
+    onClickMarker: function (hospital) {
+        console.log(hospital);
+    },
+
+    createInfoWindowContent: function (hospital, index) {
+        return "";
+    },
+
   setCentre: function (latitude, longitude, zoom) {
     if (this.map) {
       this.map.setCenter({ lat: latitude, lng: longitude });
