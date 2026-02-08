@@ -18,7 +18,7 @@
         <div class="tile-container">
 
             <form class="w-80">
-               <!--<div class="row mb-1">
+                <!--<div class="row mb-1">
                     <div class="col-1">
                         <img src="/images/hospital_pic_example.jpg" class="rounded-circle w-100" alt="Hospital Image">
                     </div>
@@ -28,14 +28,16 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>First Name</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.Firstname" placeholder="Jane" readonly />
+                            <input type="text" class="form-control w-100" @bind-value="representative.Firstname"
+                                   placeholder="Jane" disabled />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
                             <label>Hospital Name</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.Lastname" placeholder="Doe" readonly />
+                            <input type="text" class="form-control w-100" @bind-value="representative.Lastname"
+                                   placeholder="Doe" disabled />
                         </div>
                     </div>
                 </div>
@@ -44,14 +46,16 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Email</label>
-                            <input type="email" class="form-control w-100" @bind-value="representative.Email" placeholder="jane@mail.com" readonly />
+                            <input type="email" class="form-control w-100" @bind-value="representative.Email"
+                                   placeholder="jane@mail.com" disabled />
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="mb-3">
                             <label>Contact</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.Contact" placeholder="416-555-5555" readonly />
+                            <input type="text" class="form-control w-100" @bind-value="representative.Contact"
+                                   placeholder="416-555-5555" disabled />
                         </div>
                     </div>
                 </div>
@@ -61,12 +65,9 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Hospital</label>
-                            <AutoComplete @bind-Value="hospitalName"
-                                          TItem="Hospital"
-                                          DataProvider="HospitalDataProvider"
-                                          PropertyName="Name"
-                                          Placeholder="e.g. Toronto General Hospital"
-                                          class="form-control w-100"
+                            <AutoComplete @bind-Value="hospitalName" TItem="Hospital"
+                                          DataProvider="HospitalDataProvider" PropertyName="Name"
+                                          Placeholder="e.g. Toronto General Hospital" class="form-control w-100"
                                           OnChanged="(Hospital h) => OnAutoCompleteChanged(h)" />
                         </div>
                     </div>
@@ -74,14 +75,11 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Employee ID</label>
-                            <input type="email" class="form-control w-100" @bind-value="representative.EmployeeID" placeholder="Employee ID" readonly />
+                            <input type="email" class="form-control w-100" @bind-value="representative.EmployeeID"
+                                   placeholder="Employee ID" disabled />
                         </div>
                     </div>
-
-                    
                 </div>
-
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
@@ -91,26 +89,21 @@
                     </div>
 
                 </div>
-
-
-                
-            </form>
-        </div>
-    </div>
-</div>
-
-
-<div class="fixed-bottom bg-white shadow-sm ">
-    <div class="p-5">
-        <span class="float-end"><button class="btn btn-primary" type="button" @onclick="OnClickSave">Save</button></span>
-        <span class="float-end"><button class="btn btn-light" type="button" @onclick="OnClickCancel">Cancel</button></span>
-        @if (HospitalRepID != 0)
-        {
-            <span class="float-end"><button class="btn btn-danger" @onclick="ShowDialogAsync" type="button">Delete</button></span>
-        }
-    </div>
-</div>
-
+                <div class="p-5">
+                    <span class="float-end"><button class="btn btn-success" style="width: 100px;" type="button"
+                                                        @onclick="OnClickSave">Save</button></span>
+                        <span class="float-end"><button class="btn btn-light mx-2" style="width: 100px;" type="button"
+                                                            @onclick="OnClickCancel">Cancel</button></span>
+                            @if (HospitalRepID != 0)
+                            {
+                                <span class="float-end"><button class="btn btn-danger" style="width: 100px;"
+                                                                    @onclick="ShowDialogAsync" type="button">Delete</button></span>
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
 @code {
     [Parameter]
@@ -135,7 +128,8 @@
     {
         if (HospitalRepID != 0)
         {
-            representative = dbContext.Representative.Where(h => h.Id == HospitalRepID).Include<Representative>("Hospital").First<Representative>();
+            representative = dbContext.Representative.Where(h => h.Id ==
+            HospitalRepID).Include<Representative>("Hospital").First<Representative>();
             approval = representative.Status == 1;
             hospitalName = representative.Hospital.Name;
         }
@@ -159,7 +153,7 @@
 
     private async Task OnClickCancel()
     {
-        
+
         Nav.NavigateTo("/admin/reps");
     }
 
@@ -180,7 +174,8 @@
         }
     }
 
-    private async Task<AutoCompleteDataProviderResult<Hospital>> HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
+    private async Task<AutoCompleteDataProviderResult<Hospital>>
+    HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
     {
 
         return await Task.FromResult(request.ApplyTo(hospitals.OrderBy(h => h.Name)));

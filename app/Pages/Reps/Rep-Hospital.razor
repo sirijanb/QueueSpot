@@ -1,4 +1,5 @@
 @page "/rep/hospital"
+<PageTitle>Representative Hospital Edit | QueueSpot</PageTitle>
 @layout RepLayout
 @using BlazorBootstrap
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
@@ -8,7 +9,7 @@
 @inject ProtectedSessionStorage Session
 @inject ApplicationDbContext dbContext
 
-<h1>Hospital Edit</h1>
+<h1 class="ms-5">Hospital Edit</h1>
 
 <ConfirmDialog @ref="dialog" />
 
@@ -16,60 +17,57 @@
     <div class="tile">
         <div class="tile-container">
             <form class="w-80">
-                <div class="row mb-1">
+                <div class="row mb-4">
                     <div class="col-1">
-                        <img src="@HospitalImage" class="rounded-circle w-100" alt="Hospital Image">
+                        <img src="@HospitalImage" class="rounded-circle"
+                             style="width: 110px; height: 110px; object-fit: cover; display: block;"
+                             alt="Hospital Image">
                     </div>
 
-                    <div class="col-8">
+                    <div class="col-8 d-flex flex-column justify-content-center">
                         <h2>@hospital.Name</h2>
                         <span>@hospital.Address</span>
                     </div>
                 </div>
-
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
                             <label>Beds Available</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen"
+                                   placeholder="Enter Beds Available" />
                         </div>
                     </div>
-
                     <div class="col">
                         <div class="mb-3">
                             <label>Status</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.Status" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.Status"
+                                   placeholder="Enter Status" />
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
                             <label>Estimated Wait Time (Min)</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.EstimatedWait" placeholder="Input box" />
+                            <input type="text" class="form-control w-100" @bind-value="hospital.EstimatedWait"
+                                   placeholder="Enter Estimated Wait Time" />
                         </div>
                     </div>
-
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-success" style="width: 180px;" type="button"
+                            @onclick="OnClickSave">Update</button>
                 </div>
 
                 @if (SuccessfulUpdate)
                 {
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success mt-3" role="alert">
                         The Hospital Information has been updated.
                     </div>
                 }
 
             </form>
         </div>
-    </div>
-</div>
-
-<div class="fixed-bottom bg-white shadow-sm ">
-    <div class="p-5">
-        <span class="float-end"><button class="btn btn-primary" type="button" @onclick="OnClickSave">Update</button></span>
-       
     </div>
 </div>
 
@@ -97,7 +95,8 @@
             if (currentEmail != null)
             {
                 Console.WriteLine("Hospital info from : {0}", currentEmail);
-                representative = dbContext.Representative.Where(r => r.Email == currentEmail).Include<Representative>("Hospital").First<Representative>();
+                representative = dbContext.Representative.Where(r => r.Email ==
+currentEmail).Include<Representative>("Hospital").First<Representative>();
                 hospital = representative.Hospital;
                 if (!string.IsNullOrEmpty(hospital.Photo))
                 {
@@ -105,7 +104,8 @@
                 }
                 Console.WriteLine("Reps hospital : {0}", hospital.Name);
                 StateHasChanged();
-            } else
+            }
+            else
             {
                 Console.WriteLine("Current email is null");
             }

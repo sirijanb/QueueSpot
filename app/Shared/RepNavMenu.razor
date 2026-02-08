@@ -1,10 +1,19 @@
 ﻿<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="">  <i class="bi bi-hospital fs-1 text-primary"></i></div>
-    <div class="navbar-nav">
-       <a href="javascript:void(0);" class="nav-item nav-link">&nbsp;</a>
-        <a class="nav-item nav-link" href="/rep/hospital">Hospitals</a>
-        <a class="nav-item nav-link" href="/rep/settings">Settings</a>
-        <a class="nav-item nav-link" href="#" @onclick="OnLogoutClick">Logout</a>
+    <div class="d-flex justify-content-between w-100 px-5">
+        <div class="d-flex justify-content-center align-items-center gap-5 fs-4">
+            <div> <i class="bi bi-hospital fs-1 text-primary"></i></div>
+            <div>
+                <a class="nav-item nav-link fs-5" href="/rep/hospital">Hospital</a>
+            </div>
+            <div>
+                <a class="nav-item nav-link fs-5" href="/rep/settings">Settings</a>
+            </div>
+        </div>
+        <div>
+            <a class="nav-item nav-link fs-5" href="#" @onclick="OnLogoutClick">
+                <button class="btn btn-outline-danger">Logout</button>
+            </a>
+        </div>
     </div>
 </div>
 
