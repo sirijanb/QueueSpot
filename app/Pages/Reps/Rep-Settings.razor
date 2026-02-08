@@ -8,87 +8,83 @@
 @inject ProtectedSessionStorage Session
 @inject ApplicationDbContext dbContext
 
-<h1>Hospital Representative Edit</h1>
+<PageTitle>Representative Settings | QueueSpot</PageTitle>
+
+<h1 class="ms-5">Hospital Representative Edit</h1>
 
 <div class="admin-container">
     <div class="tile">
         <div class="tile-container">
-
             <form class="w-80">
-                <!--<div class="row mb-1">
-                     <div class="col-1">
-                         <img src="/images/hospital_pic_example.jpg" class="rounded-circle w-100" alt="Hospital Image">
-                     </div>
-                 </div>-->
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
                             <label>First Name</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.Firstname" placeholder="Jane" />
+                            <input type="text" class="form-control w-100" @bind-value="representative.Firstname"
+                                   placeholder="First Name" />
                         </div>
                     </div>
-
                     <div class="col">
                         <div class="mb-3">
                             <label>Last Name</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.Lastname" placeholder="Doe" />
+                            <input type="text" class="form-control w-100" @bind-value="representative.Lastname"
+                                   placeholder="Last Name" />
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
                             <label>Email</label>
-                            <input type="email" class="form-control w-100" value="@representative.Email" readonly placeholder="jane@mail.com" />
+                            <input type="email" class="form-control w-100" value="@representative.Email" readonly
+                                   placeholder="Email" />
                         </div>
                     </div>
-
                     <div class="col">
                         <div class="mb-3">
                             <label>Contact</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.Contact" placeholder="416-555-5555" />
+                            <input type="text" class="form-control w-100" @bind-value="representative.Contact"
+                                   placeholder="Contact" />
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
-
                     <div class="col">
                         <div class="mb-3">
                             <label>Hospital</label>
-                            <input type="text" class="form-control w-100" value="@hospitalName" readonly placeholder="Hospital" />
+                            <input type="text" class="form-control w-100" value="@hospitalName" readonly
+                                   placeholder="Hospital" />
                         </div>
                     </div>
-
                     <div class="col">
                         <div class="mb-3">
                             <label>Employee ID</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.EmployeeID" placeholder="Employee ID" />
+                            <input type="text" class="form-control w-100" @bind-value="representative.EmployeeID"
+                                   placeholder="Employee ID" />
                         </div>
                     </div>
-
-
                 </div>
-
-
                 <div class="row">
                     <div class="col">
                         <div class="mb-3">
                             <label>Password</label>
-                            <input type="password" class="form-control w-100" @bind-value="PasswordChange" placeholder="Enter new password to change it" />
+                            <input type="password" class="form-control w-100" @bind-value="PasswordChange"
+                                   placeholder="Enter New Password" />
                         </div>
                     </div>
-
                     <div class="col">
                         <div class="mb-3">
-                            <label>Password(Confirmation)</label>
-                            <input type="password" class="form-control w-100" @bind-value="PasswordChangeConfirm"  placeholder="Retype the new password" />
+                            <label>Confirm Password</label>
+                            <input type="password" class="form-control w-100" @bind-value="PasswordChangeConfirm"
+                                   placeholder="Retype New Password" />
                         </div>
                     </div>
                 </div>
-                @if(!string.IsNullOrEmpty(errorMessage))
+                <div class="mt-3 d-flex justify-content-end">
+                    <button class="btn btn-success" style="width: 180px;" type="button"
+                            @onclick="OnClickSave">Save</button>
+                </div>
+                @if (!string.IsNullOrEmpty(errorMessage))
                 {
                     <div class="alert alert-danger" role="alert">
                         There was an error while updating your information : @errorMessage
@@ -97,7 +93,7 @@
 
                 @if (SuccessfulUpdate)
                 {
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success mt-3" role="alert">
                         Your Information has been updated.
                     </div>
                 }
@@ -106,14 +102,6 @@
         </div>
     </div>
 </div>
-
-
-<div class="fixed-bottom bg-white shadow-sm ">
-    <div class="p-5">
-        <span class="float-end"><button class="btn btn-primary" type="button" @onclick="OnClickSave">Save</button></span>
-    </div>
-</div>
-
 
 @code {
     [Parameter]
@@ -135,7 +123,8 @@
             string? currentEmail = currentSess.Value;
             if (currentEmail != null)
             {
-                representative = dbContext.Representative.Where(h => h.Email == currentEmail).Include<Representative>("Hospital").First<Representative>();
+                representative = dbContext.Representative.Where(h => h.Email ==
+currentEmail).Include<Representative>("Hospital").First<Representative>();
                 approval = representative.Status == 1;
                 hospitalName = representative.Hospital.Name;
             }
@@ -154,9 +143,9 @@
     {
         errorMessage = "";
         SuccessfulUpdate = false;
-        if(PasswordChange != "")
+        if (PasswordChange != "")
         {
-            if(PasswordChange == PasswordChangeConfirm)
+            if (PasswordChange == PasswordChangeConfirm)
             {
 
                 representative.Password = PasswordChange;
@@ -185,7 +174,8 @@
     }
 
 
-    private async Task<AutoCompleteDataProviderResult<Hospital>> HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
+    private async Task<AutoCompleteDataProviderResult<Hospital>>
+HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
     {
 
         return await Task.FromResult(request.ApplyTo(hospitals.OrderBy(h => h.Name)));

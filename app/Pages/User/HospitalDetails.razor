@@ -38,19 +38,7 @@
                     <b class="h3">@EstimatedWait</b>
                 </div>
            </div>
-           @*
-            <div class="col ">
-                <div class="tile">
-                    <p class="mb-2 fw-bold"><i class="bi bi-geo-alt"></i> Location</p>
-                    <p class="mb-1 "><small>@Hospital.Address</small></p>
-                    @* <button class="btn btn-sm btn-outline-primary mt-2" @onclick="OpenDirections">
-                        <i class="bi bi-navigation"></i> Get Directions
-                    </button> *@
-                </div>
-            </div>
-            *@
-
-            <div class="col ">
+           <div class="col ">
                 <div class="tile">
                 <p>Available beds</p>
                     <b class="h3">@Hospital.BedsOpen</b> beds
@@ -106,13 +94,6 @@
         </div>
     </div>
 </div>
-
-<!-- Call Now Button -->
-@* <div class="container mt-4">
-    <button class="btn btn-success w-100">
-        <i class="bi bi-telephone-fill"></i> Call Hospital
-    </button>
-</div> *@
 </div>
 
 @code {
@@ -129,10 +110,6 @@
     {
         return OnClickClose.InvokeAsync(args);
     }
-
-
-
-
     private async Task OpenDirections()
     {
         if (Hospital != null && !string.IsNullOrEmpty(Hospital.Address))
