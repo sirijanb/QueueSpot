@@ -18,7 +18,9 @@
             <tr>
                 <th scope="col">First Name</th>
                 <th scope="col">Last Name</th>
+                <th scope="col">Email</th>
                 <th scope="col">Hospital</th>
+                @* <th scope="col">Approval</th> *@
             </tr>
         </thead>
         <tbody>
@@ -32,6 +34,7 @@
                 <tr style="cursor:pointer;" @onclick="(e) => OnClickRep(rep.Id)">
                     <td>@rep.Firstname</td>
                     <td>@rep.Lastname</td>
+                    <td>@rep.Email</td>
                     <td>@(rep.Hospital == null ? "" : rep.Hospital.Name)</td>
 
                 </tr>

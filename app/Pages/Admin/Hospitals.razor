@@ -13,25 +13,24 @@
 <h1>Hospital Management</h1>
 
 <span class="float-end"><button class="btn btn-primary" type="button" @onclick="RegisterNewHospital">New
-        Hospital</button></span>
+    Hospital</button></span>
 
-<div class="admin-container">
-    <div class="tile">
-        <div class="tile-container">
+    <div class="admin-container">
+        <div class="tile">
+            <div class="tile-container">
+                <div class="float-end " style="margin-bottom:10px;">
+                    <TextInput @bind-Value="@searchText" Placeholder="Enter Hospital Name" @onkeyup="OnSearchBarDown" />
+                </div>
+                <div class="clearfix"></div>
+                <HospitalMgmtList Hospitals="hospitals"></HospitalMgmtList>
 
-            <div class="float-end " style="margin-bottom:10px;">
-                <TextInput @bind-Value="@searchText" Placeholder="Enter Hospital Name" @onkeyup="OnSearchBarDown" />
-            </div>
-            <div class="clearfix"></div>
-            <HospitalMgmtList Hospitals="hospitals"></HospitalMgmtList>
-
-            <div class=" mt-4 d-flex justify-content-center align-items-center">
-                <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber"
-                    PageChanged="OnPageChangedAsync" />
+                <div class=" mt-4 d-flex justify-content-center align-items-center">
+                    <Pagination TotalPages="@TotalPages" ActivePageNumber="@ActivePageNumber"
+                                PageChanged="OnPageChangedAsync" />
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 @code {
     int ActivePageNumber = 1;

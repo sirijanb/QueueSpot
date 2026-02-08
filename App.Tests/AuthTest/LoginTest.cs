@@ -82,4 +82,62 @@ public class LoginTest : TestContext
 
         Assert.Contains("Management Login", cut.Markup);
     }
+
+    [Fact]
+    public void LoginPage_ShowsPendingApproval_WhenRepStatusIsZero()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        var context = new ApplicationDbContext(options);
+        context.Representative.Add(new Representative
+        {
+            Id = 1,
+            Email = "pending@test.com",
+            Password = "pass123",
+            Role = "rep",
+            Firstname = "Pending",
+            Lastname = "Rep",
+            Status = 0
+        });
+        context.SaveChanges();
+
+        Services.AddSingleton(context);
+        Services.AddFakeProtectedSessionStorage();
+
+        var cut = RenderComponent<Login>();
+
+        cut.Find("input[type='text']").Change("pending@test.com");
+        cut.Find("input[type='password']").Change("pass123");
+        cut.Find("button").Click();
+
+        var alert = cut.Find(".alert-danger");
+        Assert.Contains("still under review", alert.TextContent);
+    }
+
+    [Fact]
+    public void LoginPage_ShowsError_WhenFieldsAreEmpty()
+    {
+        Services.AddSingleton(CreateInMemoryContext());
+        Services.AddFakeProtectedSessionStorage();
+
+        var cut = RenderComponent<Login>();
+
+        cut.Find("button").Click();
+
+        var alert = cut.Find(".alert-danger");
+        Assert.Contains("Invalid Email or Password", alert.TextContent);
+    }
+
+    [Fact]
+    public void LoginPage_ContainsSignUpLink()
+    {
+        Services.AddSingleton(CreateInMemoryContext());
+        Services.AddFakeProtectedSessionStorage();
+
+        var cut = RenderComponent<Login>();
+
+        Assert.Contains("/admin/sign-up", cut.Markup);
+        Assert.Contains("have an account?", cut.Markup);
+    }
 }
