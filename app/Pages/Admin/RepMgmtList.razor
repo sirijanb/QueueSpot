@@ -1,6 +1,7 @@
 ﻿@using app.Models
 @using BlazorBootstrap
 @inject NavigationManager Nav
+@inject ApplicationDbContext dbContext
 
 <Card @attributes="AllOtherAttributes">
     @* <ul class="list-group list-group-flush">
@@ -20,7 +21,7 @@
                 <th scope="col">Last Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Hospital</th>
-                @* <th scope="col">Approval</th> *@
+                <th scope="col">Approval</th>
             </tr>
         </thead>
         <tbody>
@@ -36,7 +37,12 @@
                     <td>@rep.Lastname</td>
                     <td>@rep.Email</td>
                     <td>@(rep.Hospital == null ? "" : rep.Hospital.Name)</td>
-
+                    <td>
+                        <div class="form-check form-switch" @onclick:stopPropagation="true">
+                            <input class="form-check-input" type="checkbox" role="switch" checked="@(rep.Status == 1)"
+                                   style="cursor: pointer;"                       @onchange="(e) => OnApprovalChanged(rep, e)" />
+                        </div>
+                    </td>
                 </tr>
             }
 
@@ -57,5 +63,15 @@
     {
 
         Nav.NavigateTo("/admin/reps/edit/" + Id.ToString());
+    }
+
+    private async Task OnApprovalChanged(Representative rep, ChangeEventArgs e)
+    {
+        if (e.Value is bool isChecked)
+        {
+            rep.Status = isChecked ? 1 : 0;
+            dbContext.Representative.Update(rep);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }
