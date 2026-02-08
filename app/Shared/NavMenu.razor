@@ -2,10 +2,8 @@
     <div class="mx-5"> <i class="bi bi-hospital fs-1 text-primary"></i></div>
     <div class="navbar-nav d-flex justify-content-between w-100 me-5">
         <div class="d-flex align-items-center">
-            @* <a class="nav-item nav-link" href="/admin/dashboard">Dashboard</a> *@
-            <a class="nav-item nav-link" href="/admin/hospitals">Hospitals</a>
-            <a class="nav-item nav-link" href="/admin/reps">Representatives</a>
-            @* <a class="nav-item nav-link" href="/admin/settings">Settings</a> *@
+            <NavLink class="nav-item nav-link" href="/admin/hospitals" Match="NavLinkMatch.Prefix">Hospitals</NavLink>
+            <NavLink class="nav-item nav-link" href="/admin/reps" Match="NavLinkMatch.Prefix">Representatives</NavLink>
         </div>
         <div>
             <a class="nav-item nav-link" href="/admin/login" @onclick="OnLogoutClick">Logout</a>
