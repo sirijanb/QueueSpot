@@ -89,26 +89,21 @@
                     </div>
 
                 </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-<div class="fixed-bottom bg-white shadow-sm">
-    <div class="p-5">
-        <span class="float-end"><button class="btn btn-primary" type="button"
-                                            @onclick="OnClickSave">Save</button></span>
-            <span class="float-end"><button class="btn btn-light mx-2" type="button"
-                                                @onclick="OnClickCancel">Cancel</button></span>
-                @if (HospitalRepID != 0)
-                {
-                    <span class="float-end"><button class="btn btn-danger" @onclick="ShowDialogAsync"
-                                                        type="button">Delete</button></span>
-                    }
+                <div class="p-5">
+                    <span class="float-end"><button class="btn btn-success" style="width: 100px;" type="button"
+                                                        @onclick="OnClickSave">Save</button></span>
+                        <span class="float-end"><button class="btn btn-light mx-2" style="width: 100px;" type="button"
+                                                            @onclick="OnClickCancel">Cancel</button></span>
+                            @if (HospitalRepID != 0)
+                            {
+                                <span class="float-end"><button class="btn btn-danger" style="width: 100px;"
+                                                                    @onclick="ShowDialogAsync" type="button">Delete</button></span>
+                                }
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-
 
 @code {
     [Parameter]
@@ -134,7 +129,7 @@
         if (HospitalRepID != 0)
         {
             representative = dbContext.Representative.Where(h => h.Id ==
-HospitalRepID).Include<Representative>("Hospital").First<Representative>();
+            HospitalRepID).Include<Representative>("Hospital").First<Representative>();
             approval = representative.Status == 1;
             hospitalName = representative.Hospital.Name;
         }
@@ -180,7 +175,7 @@ HospitalRepID).Include<Representative>("Hospital").First<Representative>();
     }
 
     private async Task<AutoCompleteDataProviderResult<Hospital>>
-HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
+    HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
     {
 
         return await Task.FromResult(request.ApplyTo(hospitals.OrderBy(h => h.Name)));
