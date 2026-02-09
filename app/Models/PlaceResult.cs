@@ -16,6 +16,9 @@
         public string BusinessStatus { get; set; } = string.Empty;
         public int PriceLevel { get; set; }
         public List<string> Photos { get; set; } = new();
+
+        public List<string> OpeningHours { get; set; } = new();
+        public bool IsOpen24Hours { get; set; }
     }
 
     
