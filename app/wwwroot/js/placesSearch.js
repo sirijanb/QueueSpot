@@ -92,6 +92,7 @@
             "formattedAddress",
             "types",
             "photos",
+            "regularOpeningHours"
           ],
           locationRestriction: {
             center: { lat: latitude, lng: longitude },
@@ -115,7 +116,11 @@
             ? place.photos
                 .slice(0, 3)
                 .map((photo) => photo.getURI({ maxWidth: 400, maxHeight: 300 }))
-            : [],
+                : [],
+
+          openingHours: place.regularOpeningHours ? place.regularOpeningHours.weekdayDescriptions : [],
+          isOpen24Hours: this.checkIfOpen24Hours(place)
+
         }));
 
         resolve(results);
