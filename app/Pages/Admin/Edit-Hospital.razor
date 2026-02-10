@@ -67,8 +67,9 @@
 
                             @foreach (var assignment in assignments)
                             {
-                                <Button Color="ButtonColor.Primary" @onclick="() => { OnClickRemoveService(assignment); }"
-                                        Size="ButtonSize.Large">@assignment.Service.ServiceName <i
+                                <Button Color="ButtonColor.Primary" class="mt-2 me-2"
+                                        @onclick="() => { OnClickRemoveService(assignment); }"
+                                        Size="ButtonSize.Small">@assignment.Service.ServiceName <i
                                     class="bi bi-x-lg"></i></Button>
                                 }
                             </div>
