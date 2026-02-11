@@ -34,7 +34,7 @@
                 <div>
                     <b>⏱️ Est Wait Time</b>
                 </div>
-                <div class="fs-6">
+                <div class="fs-6 estimated-wait-time">
                     @EstimatedWait
                 </div>
             </div>
@@ -42,8 +42,8 @@
                 <div>
                     <b>🛏️ Beds Available</b>
                 </div>
-                <div class="fs-6">
-                    @Hospital.BedsOpen Beds
+                <div class="fs-6 open-beds">
+                    @Hospital.BedsOpen
                 </div>
             </div>
         </div>
@@ -67,19 +67,21 @@
         <div class="hospital-detail-info pt-2 @(showDetail ? "" : "d-none")">
             <p>
                 <span class="addr"><i class="bi bi-pin-map-fill"></i> @Hospital.Address</span><br />
-                <span class="services">
-                    <i class="bi bi-clipboard-heart"></i> 
-                    @foreach (var service in Hospital.Services)
-                    {
-                        <span class="badge bg-light text-dark me-1">@service</span>
-                    }
-                </span><br />
-                <span class="contact"><i class="bi bi-telephone-fill"></i> 416-000-0000</span><br />
+                
+                <span class="contact"><i class="bi bi-telephone-fill"></i> @Hospital.PhoneNumber</span><br />
             </p>
 
             
 
         </div>
+
+        <span class="services">
+            <!--<i class="bi bi-clipboard-heart"></i>-->
+            @foreach (var service in Hospital.Services)
+            {
+                <span class="badge bg-light text-dark me-1">@service</span>
+            }
+        </span><br />
     </div>
 </div>
 

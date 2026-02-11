@@ -230,7 +230,7 @@
             );
 
 
-           // associateHospitalInfo();
+            // associateHospitalInfo();
 
             searchNearbyHospitals();
 
@@ -318,6 +318,8 @@
         {
             hospital.Distance = String.Format("{0:0.00} km", distance(hospital.Latitude, hospital.Longitude));
         }
+
+        Hospitals = Hospitals.OrderBy(h => h.Distance).ToList<Hospital>();
     }
 
 

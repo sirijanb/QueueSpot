@@ -8,6 +8,7 @@
 @inject NavigationManager Nav
 @inject ProtectedSessionStorage Session
 @inject ApplicationDbContext dbContext
+@inject IJSRuntime JS
 
 <h1 class="ms-5">Hospital Edit</h1>
 
@@ -115,6 +116,8 @@ currentEmail).Include<Representative>("Hospital").First<Representative>();
     private async Task OnClickSave()
     {
 
+
+        await JS.InvokeVoidAsync("sendHospitalUpdateInfo", hospital.PlaceID, hospital.EstimatedWait, hospital.BedsOpen);
         dbContext.Hospitals.Update(hospital);
 
 
