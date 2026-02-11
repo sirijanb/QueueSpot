@@ -1,5 +1,5 @@
 @page "/admin/sign-up"
-<PageTitle>Sign Up | QueueSpot</PageTitle>
+<PageTitle>Sign Up - QueueSpot</PageTitle>
 @layout LoginLayout
 @using app.Models
 @using BlazorBootstrap
@@ -28,7 +28,8 @@
 
         <div class="mb-3">
             <label>Contact</label>
-            <input type="text" class="form-control w-100" placeholder="416-555-5555" @bind="representative.Contact" />
+            @*  <input type="text" class="form-control w-100" placeholder="4165555555" @bind="representative.Contact" @oninput="FormatPhone" maxlength="10" inputmode="numeric" /> *@
+            <input type="text" class="form-control w-100" placeholder="4165555555" @bind="representative.Contact" @oninput="FormatPhone" maxlength="10" inputmode="numeric" />
         </div>
 
         @* TODO:Better options like dropdown, autocomplete etc.     *@
@@ -86,6 +87,7 @@ else
     private string successfulMsg = "";
     private string passwordConfirm = "";
     private string hospitalName = "";
+    private string PhoneNumber;
     private Representative representative = new Representative();
     private List<Hospital> hospitals = new List<Hospital>();
 
@@ -99,6 +101,30 @@ else
         }
     }
 
+
+
+    private void FormatPhone(ChangeEventArgs e)
+    {
+        var val = e.Value?.ToString() ?? string.Empty;
+        var digits = new string(val.Where(char.IsDigit).ToArray());
+
+        if (digits.Length > 10)
+            digits = digits[..10];
+
+        // keep representative.Contact digits-only while typing (maxlength="10" also prevents longer input)
+        representative.Contact = digits;
+    }
+
+    // private string FormatPhoneDigits(string digits)
+    // {
+    //     return digits.Length switch
+    //     {
+    //         > 6 => $"({digits[..3]}) {digits.Substring(3, 3)}-{digits[6..]}",
+    //         > 3 => $"({digits[..3]}) {digits[3..]}",
+    //         _ => digits
+    //     };
+    // }
+
     private async Task<AutoCompleteDataProviderResult<Hospital>>
     HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
     {
@@ -110,6 +136,11 @@ else
     {
         representative.Hospital = h;
 
+    }
+    private bool IsPhoneValid(out string digits)
+    {
+        digits = representative.Contact == null ? string.Empty : new string(representative.Contact.Where(char.IsDigit).ToArray());
+        return digits.Length == 10;
     }
 
 
@@ -173,8 +204,15 @@ else
         {
             representative.Role = "rep";
         }
+        if (!IsPhoneValid(out var digitsOnly))
+        {
+            errorMessage = "Please enter a valid 10-digit phone number";
+            return;
+        }
 
-        representative.Status = 0;
+        // normalize stored contact to consistent formatted value
+        // representative.Contact = FormatPhoneDigits(digitsOnly);
+
 
         dbContext.Representative.Add(representative);
         dbContext.SaveChanges();
