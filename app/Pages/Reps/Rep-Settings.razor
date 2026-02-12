@@ -20,15 +20,19 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>First Name</label>
+
                             <input type="text" class="form-control w-100" @bind-value="representative.Firstname"
                                    placeholder="First Name" disabled />
+
                         </div>
                     </div>
                     <div class="col">
                         <div class="mb-3">
                             <label>Last Name</label>
+
                             <input type="text" class="form-control w-100" @bind-value="representative.Lastname"
                                    placeholder="Last Name" disabled />
+
                         </div>
                     </div>
                 </div>
@@ -43,7 +47,7 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Contact</label>
-                            <input type="text" class="form-control w-100" @bind-value="representative.Contact"
+                            <input type="text" class="form-control w-100" @bind-value="representative.Contact" @oninput="FormatPhone" maxlength="10" inputmode="numeric"
                                    placeholder="Contact" />
                         </div>
                     </div>
@@ -59,8 +63,11 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Employee ID</label>
+
                             <input type="text" class="form-control w-100" @bind-value="representative.EmployeeID"
                                    placeholder="Employee ID" disabled />
+
+
                         </div>
                     </div>
                 </div>
@@ -161,6 +168,12 @@ currentEmail).Include<Representative>("Hospital").First<Representative>();
                 return;
             }
         }
+        if (!IsPhoneValid(out var digitsOnly))
+        {
+            errorMessage = "Please enter a valid 10-digit phone number";
+            return;
+        }
+
 
         dbContext.Representative.Update(representative);
 
@@ -202,6 +215,22 @@ HospitalDataProvider(AutoCompleteDataProviderRequest<Hospital> request)
         representative.Hospital = h;
 
     }
+    private void FormatPhone(ChangeEventArgs e)
+    {
+        var val = e.Value?.ToString() ?? string.Empty;
+        var digits = new string(val.Where(char.IsDigit).ToArray());
 
+        if (digits.Length > 10)
+            digits = digits[..10];
+
+        // keep representative.Contact digits-only while typing (maxlength="10" also prevents longer input)
+        representative.Contact = digits;
+    }
+
+    private bool IsPhoneValid(out string digits)
+    {
+        digits = representative.Contact == null ? string.Empty : new string(representative.Contact.Where(char.IsDigit).ToArray());
+        return digits.Length == 10;
+    }
 
 }
