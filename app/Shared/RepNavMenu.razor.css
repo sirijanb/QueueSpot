@@ -45,6 +45,17 @@
     color: white;
 }
 
+.nav-item ::deep a.active-tab,
+a.active-tab,
+.nav-item.active-tab,
+.nav-item.nav-link.active-tab {
+    background-color: transparent;
+    color: #0d6efd !important;
+    font-weight: 600;
+    border-bottom: 3px solid rgba(13,110,253,0.15);
+    padding-bottom: 6px;
+}
+
 .nav-item ::deep a:hover {
     background-color: rgba(255,255,255,0.1);
     color: white;

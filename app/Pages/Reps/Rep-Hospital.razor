@@ -62,7 +62,14 @@
                 @if (SuccessfulUpdate)
                 {
                     <div class="alert alert-success mt-3" role="alert">
-                        The Hospital Information has been updated.
+                        Your Hospital Information has been updated.
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger mt-3" role="alert">
+                        @errorMessage
                     </div>
                 }
 
@@ -78,6 +85,7 @@
 
     private bool SuccessfulUpdate = false;
     private string HospitalImage = "/images/hospital_pic_example_grey.jpg";
+    private string errorMessage = "";
 
 
     protected override void OnInitialized()
@@ -114,6 +122,44 @@ currentEmail).Include<Representative>("Hospital").First<Representative>();
 
     private async Task OnClickSave()
     {
+        errorMessage = "";
+        SuccessfulUpdate = false;
+
+        if (string.IsNullOrWhiteSpace(hospital.BedsOpen))
+        {
+            errorMessage = "Beds Available is required.";
+            return;
+        }
+
+        if (!IsWholeNumber(hospital.BedsOpen))
+        {
+            errorMessage = "Beds Available must be a whole number.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(hospital.Status))
+        {
+            errorMessage = "Status is required.";
+            return;
+        }
+
+        if (!IsStatusText(hospital.Status))
+        {
+            errorMessage = "Status must contain only letters and spaces.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(hospital.EstimatedWait))
+        {
+            errorMessage = "Estimated Wait Time is required.";
+            return;
+        }
+
+        if (!IsWholeNumber(hospital.EstimatedWait))
+        {
+            errorMessage = "Estimated Wait Time must be a whole number.";
+            return;
+        }
 
         dbContext.Hospitals.Update(hospital);
 
@@ -121,6 +167,27 @@ currentEmail).Include<Representative>("Hospital").First<Representative>();
         dbContext.SaveChanges();
         SuccessfulUpdate = true;
         //Nav.NavigateTo("/rep/hospital");
+    }
+
+    private bool IsWholeNumber(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        return int.TryParse(value.Trim(), out _);
+    }
+
+    private bool IsStatusText(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        var pattern = @"^[A-Za-z ]+$";
+        return System.Text.RegularExpressions.Regex.IsMatch(value.Trim(), pattern);
     }
 
 }

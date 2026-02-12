@@ -21,14 +21,14 @@
                         <div class="mb-3">
                             <label>First Name</label>
                             <input type="text" class="form-control w-100" @bind-value="representative.Firstname"
-                                   placeholder="First Name" />
+                                   placeholder="First Name" disabled />
                         </div>
                     </div>
                     <div class="col">
                         <div class="mb-3">
                             <label>Last Name</label>
                             <input type="text" class="form-control w-100" @bind-value="representative.Lastname"
-                                   placeholder="Last Name" />
+                                   placeholder="Last Name" disabled />
                         </div>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
                         <div class="mb-3">
                             <label>Email</label>
                             <input type="email" class="form-control w-100" value="@representative.Email" readonly
-                                   placeholder="Email" />
+                                   placeholder="Email" disabled />
                         </div>
                     </div>
                     <div class="col">
@@ -53,14 +53,14 @@
                         <div class="mb-3">
                             <label>Hospital</label>
                             <input type="text" class="form-control w-100" value="@hospitalName" readonly
-                                   placeholder="Hospital" />
+                                   placeholder="Hospital" disabled />
                         </div>
                     </div>
                     <div class="col">
                         <div class="mb-3">
                             <label>Employee ID</label>
                             <input type="text" class="form-control w-100" @bind-value="representative.EmployeeID"
-                                   placeholder="Employee ID" />
+                                   placeholder="Employee ID" disabled />
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                         <div class="mb-3">
                             <label>Confirm Password</label>
                             <input type="password" class="form-control w-100" @bind-value="PasswordChangeConfirm"
-                                   placeholder="Retype New Password" />
+                                   placeholder="Confirm Password" />
                         </div>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                 </div>
                 @if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert alert-danger mt-3" role="alert">
                         There was an error while updating your information : @errorMessage
                     </div>
                 }
@@ -94,7 +94,7 @@
                 @if (SuccessfulUpdate)
                 {
                     <div class="alert alert-success mt-3" role="alert">
-                        Your Information has been updated.
+                        Your Information has been updated successfully.
                     </div>
                 }
 
@@ -143,6 +143,11 @@ currentEmail).Include<Representative>("Hospital").First<Representative>();
     {
         errorMessage = "";
         SuccessfulUpdate = false;
+        if (!IsValidPhone(representative.Contact))
+        {
+            errorMessage = "Invalid phone number. Please enter a valid 10-digit phone number.";
+            return;
+        }
         if (PasswordChange != "")
         {
             if (PasswordChange == PasswordChangeConfirm)
@@ -152,7 +157,7 @@ currentEmail).Include<Representative>("Hospital").First<Representative>();
             }
             else
             {
-                errorMessage = "Password doesn't match!";
+                errorMessage = "Passwords do not match. Please try again.";
                 return;
             }
         }
@@ -171,6 +176,17 @@ currentEmail).Include<Representative>("Hospital").First<Representative>();
     {
 
         Nav.NavigateTo("/admin/reps");
+    }
+
+    private bool IsValidPhone(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return false;
+        }
+
+        var pattern = @"^(\d{10}|\(\d{3}\)\s?\d{3}-\d{4}|\d{3}-\d{3}-\d{4})$";
+        return System.Text.RegularExpressions.Regex.IsMatch(phone.Trim(), pattern);
     }
 
 
