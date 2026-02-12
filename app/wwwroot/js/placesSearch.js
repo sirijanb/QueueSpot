@@ -119,7 +119,7 @@
                 : [],
 
           openingHours: place.regularOpeningHours ? place.regularOpeningHours.weekdayDescriptions : [],
-          isOpen24Hours: this.checkIfOpen24Hours(place)
+          isOpen24Hours: true //this.checkIfOpen24Hours(place)
 
         }));
 
@@ -292,13 +292,13 @@
             // Create custom HTML marker
             const markerDiv = document.createElement('div');
             markerDiv.className = 'custom-hospital-marker';
-            markerDiv.id = "hospital_marker_" + hospital.placeId;
+            markerDiv.id = "hospital_marker_" + hospital.placeID;
             markerDiv.innerHTML = `
                 <div class="marker-content">
                     <div class="marker-layout">
                         <div class="marker-container">
                           <p><b>${hospital.name}</b></p>
-                          <p><span>${waitTime}</span></p>
+                          <p><span>Estimated time : <b id="hospital_marker_ewt_${hospital.placeID}">${waitTime}</b></span></p>
                           </div>
                     </div>
                     <div class="marker-icon">
