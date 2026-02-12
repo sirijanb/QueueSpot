@@ -34,7 +34,7 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Beds Available</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen"
+                            <input type="text" class="form-control w-100" @bind-value="hospital.BedsOpen" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                    placeholder="Enter Beds Available" />
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                     <div class="col">
                         <div class="mb-3">
                             <label>Estimated Wait Time (Min)</label>
-                            <input type="text" class="form-control w-100" @bind-value="hospital.EstimatedWait"
+                            <input type="text" class="form-control w-100" @bind-value="hospital.EstimatedWait" onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                    placeholder="Enter Estimated Wait Time" />
                         </div>
                     </div>
