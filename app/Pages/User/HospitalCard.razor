@@ -68,7 +68,7 @@
             <p>
                 <span class="addr"><i class="bi bi-pin-map-fill"></i> @Hospital.Address</span><br />
                 
-                <span class="contact"><i class="bi bi-telephone-fill"></i> @Hospital.PhoneNumber</span><br />
+                <span class="contact"><i class="bi bi-telephone-fill"></i> @(string.IsNullOrEmpty(Hospital.PhoneNumber) ? "N/A" : Hospital.PhoneNumber)</span><br />
             </p>
 
             
